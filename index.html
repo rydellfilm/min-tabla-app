@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Min Tablå">
+<title>Min Tablå</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f1115'/%3E%3Crect x='10' y='16' width='44' height='34' rx='6' fill='none' stroke='%23ffb547' stroke-width='4'/%3E%3Crect x='17' y='24' width='26' height='4' rx='2' fill='%23ffb547'/%3E%3Crect x='17' y='32' width='18' height='4' rx='2' fill='%23ff7a59'/%3E%3Crect x='17' y='40' width='22' height='4' rx='2' fill='%239aa1ae'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1115;--bg2:#171a21;--card:#1d2129;--line:#2a2f3a;--txt:#eef0f4;--mut:#9aa1ae;
+  --acc:#ffb547;--acc2:#ff7a59;--ok:#4fd18b;--warn:#ff5d5d;
+  --r:14px;--safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:"Inter Tight",system-ui,sans-serif;font-size:16px}
+button,input,select,textarea{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:5;background:linear-gradient(var(--bg) 75%,transparent);padding:calc(var(--safe-t) + 14px) 18px 8px}
+header h1{font-family:Fraunces,serif;font-weight:800;font-size:28px;margin:0;letter-spacing:-.5px}
+header h1 span{color:var(--acc)}
+header .sub{color:var(--mut);font-size:13px;margin-top:2px}
+main{padding:0 14px calc(90px + var(--safe-b));max-width:720px;margin:0 auto}
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;background:rgba(23,26,33,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 6px calc(6px + var(--safe-b))}
+nav.bottom a{flex:1;text-align:center;color:var(--mut);text-decoration:none;font-size:11px;font-weight:600;padding:6px 0;border-radius:10px}
+nav.bottom a .i{display:block;font-size:20px;line-height:24px}
+nav.bottom a.on{color:var(--acc)}
+h2{font-family:Fraunces,serif;font-size:20px;margin:22px 4px 10px}
+h2 small{font-family:"Inter Tight";font-size:12px;color:var(--mut);font-weight:500;margin-left:6px}
+h4{margin:14px 2px 6px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:10px}
+.prog{display:flex;gap:12px;align-items:center;cursor:pointer}
+.poster{width:52px;height:72px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-weight:800;font-size:20px;color:#0f1115;overflow:hidden;position:relative}
+.poster img{width:100%;height:100%;object-fit:cover}
+.poster .rk{position:absolute;left:4px;top:3px;font-family:"Inter Tight";font-size:12px;font-weight:800;background:rgba(15,17,21,.85);color:var(--acc);border-radius:6px;padding:1px 5px}
+.prog .t{font-weight:700;font-size:16px}
+.prog .m{color:var(--mut);font-size:13px;margin-top:3px}
+.prog .grow{flex:1;min-width:0}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;margin:4px 4px 0 0;color:#fff;white-space:nowrap}
+.chip.logo{background:transparent;padding:0;display:inline-flex;align-items:center;gap:6px;color:var(--txt);vertical-align:middle}
+.chip.logo img{width:24px;height:24px;border-radius:6px;display:block}
+.tag{display:inline-block;font-size:13px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);margin:0 6px 6px 0;cursor:pointer;color:var(--mut);background:transparent;white-space:nowrap}
+.tag.on{background:var(--acc);color:#111;border-color:var(--acc);font-weight:700}
+.tag .x{margin-left:6px;opacity:.7}
+.catbar{display:flex;gap:6px;overflow-x:auto;padding:4px 0 2px;scrollbar-width:none;margin:0 -14px;padding-left:14px}
+.catbar::-webkit-scrollbar,.hscroll::-webkit-scrollbar{display:none}
+.catbar .tag{font-size:14px;padding:8px 14px;margin:0}
+.subbar{display:flex;flex-wrap:wrap;margin-top:8px}
+.subbar .tag{font-size:12px;padding:4px 10px}
+.warn{border-color:#5a2a2a;background:linear-gradient(135deg,#2a1719,#1d2129)}
+.warn .lbl{color:var(--warn);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.reason{font-size:12px;color:var(--acc);margin-top:4px}
+.seg{display:flex;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:transparent;padding:8px;border-radius:9px;font-weight:600;color:var(--mut);cursor:pointer}
+.seg button.on{background:var(--acc);color:#111}
+.navrow{display:flex;align-items:center;justify-content:space-between;margin:12px 2px}
+.navrow b{font-family:Fraunces,serif;font-size:18px;text-transform:capitalize}
+.btn{border:1px solid var(--line);background:var(--bg2);border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:600}
+.btn.pri{background:var(--acc);color:#111;border-color:var(--acc)}
+.btn.sm{padding:5px 9px;font-size:13px}
+.btn:disabled{opacity:.5}
+.day{margin:16px 2px 6px;font-weight:700;color:var(--mut);font-size:13px;text-transform:uppercase;letter-spacing:.6px}
+.day.today{color:var(--acc)}
+.ev{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line);margin-bottom:6px;cursor:pointer}
+.ev .time{font-variant-numeric:tabular-nums;font-weight:700;min-width:46px;color:var(--acc)}
+.ev .lab{font-size:12px;color:var(--mut)}
+.ev.leave .time{color:var(--warn)}
+.ev.new .time{color:var(--ok)}
+.empty{color:var(--mut);text-align:center;padding:24px 10px;font-size:14px}
+label.f{display:block;font-size:13px;color:var(--mut);margin:12px 0 4px}
+input[type=text],input[type=password],input[type=date],input[type=number],select,textarea{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px}
+textarea{min-height:90px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{flex:1}
+.toggle{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--mut);cursor:pointer;margin-top:10px}
+.hint{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.4}
+.sheetbg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;max-height:88vh;overflow:auto;background:var(--bg2);border-radius:20px 20px 0 0;border-top:1px solid var(--line);padding:10px 18px calc(24px + var(--safe-b));transform:translateY(100%);transition:transform .25s ease;max-width:720px;margin:0 auto}
+.sheet.open{transform:none}
+.sheet .grab{width:40px;height:5px;background:var(--line);border-radius:3px;margin:4px auto 12px}
+.sheet h3{font-family:Fraunces,serif;font-size:26px;margin:4px 0 2px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.acts .btn.on{background:var(--acc);color:#111;border-color:var(--acc)}
+.avail{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.people a{color:var(--txt);text-decoration:underline dotted;cursor:pointer}
+.ai-out{white-space:pre-wrap;line-height:1.5;font-size:15px}
+.ai-out a{color:var(--acc);font-weight:700;cursor:pointer;text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:calc(90px + var(--safe-b));transform:translateX(-50%);background:var(--txt);color:#111;padding:10px 16px;border-radius:12px;font-weight:600;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+.demo{font-size:12px;color:var(--mut);text-align:center;margin:18px 0 0}
+.hscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+.mini{flex:none;width:118px;cursor:pointer}
+.mini .poster{width:118px;height:160px;font-size:32px}
+.mini .t{font-size:13px;font-weight:700;margin-top:6px;line-height:1.25}
+.mini .m{font-size:11px;color:var(--mut);margin-top:2px}
+.rowhead{display:flex;justify-content:space-between;align-items:baseline;margin:16px 2px 8px}
+.rowhead b{font-size:15px}
+.rowhead span{font-size:12px;color:var(--mut)}
+#app,#sheetc{zoom:var(--z,1)}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px;border-radius:12px}
+.rt{display:inline-flex;gap:4px;align-items:center;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;margin:4px 4px 0 0;background:#2a2f3a;color:var(--txt);text-decoration:none;white-space:nowrap}
+.rt.imdb{background:#f5c518;color:#111}.rt.rtom{background:#fa320a;color:#fff}.rt.mc{background:#66cc33;color:#111}.rt.tmdb{background:#01b4e4;color:#062a33}
+.heart{border:0;background:transparent;font-size:20px;line-height:1;color:var(--line);cursor:pointer;padding:6px;flex:none}
+.heart.on{color:#ff5d8a}
+.ev .heart{align-self:center}
+.searchbox{display:flex;gap:8px;margin-top:6px}
+.searchbox input{font-size:17px;padding:12px}
+.ext{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--txt)}
+.ext img{width:96px;height:54px;object-fit:cover;border-radius:6px;flex:none;background:#000}
+.ext .m{font-size:12px;color:var(--mut)}
+.kbd{display:inline-block;font-family:ui-monospace,monospace;font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:1px 6px;margin-right:4px;background:var(--bg2)}
+.seg.sm button{padding:6px;font-size:13px}
+#printArea{display:none}
+@media print{
+  body{background:#fff!important;color:#000!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important;font-family:"Inter Tight",Arial,sans-serif;color:#000;font-size:var(--pfs,11pt)}
+  #printArea h1{font-family:Fraunces,Georgia,serif;font-size:1.8em;margin:0 0 2px}
+  #printArea .pm{color:#555;font-size:.85em;margin-bottom:12px}
+  #printArea h2{font-size:1.15em;border-bottom:1px solid #999;margin:14px 0 6px;padding-bottom:2px;text-transform:capitalize}
+  #printArea .it{break-inside:avoid;margin:0 0 8px}
+  #printArea .it b{font-size:1.05em}
+  #printArea .sv{float:right;font-weight:700}
+  #printArea .in{color:#333;font-size:.9em}
+  #printArea .ds{font-size:.9em}
+  @page{margin:14mm}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Min <span>Tablå</span></h1>
+  <div class="sub" id="sub"></div>
+</header>
+<main id="app"></main>
+
+<nav class="bottom">
+  <a href="#tips" data-r="tips"><span class="i">★</span>Tips</a>
+  <a href="#tabla" data-r="tabla"><span class="i">▦</span>Tablå</a>
+  <a href="#sok" data-r="sok"><span class="i">⌕</span>Sök</a>
+  <a href="#mina" data-r="mina"><span class="i">♥</span>Mitt</a>
+  <a href="#installningar" data-r="installningar"><span class="i">⚙</span>Inställningar</a>
+</nav>
+
+<div class="sheetbg" id="sheetbg"></div>
+<div class="sheet" id="sheet"><div class="grab"></div><button class="btn sm" id="sheetx" aria-label="Stäng" style="position:sticky;top:0;float:right;z-index:2">✕</button><div id="sheetc"></div></div>
+<div class="toast" id="toast"></div>
+<div id="printArea"></div>
+
+<script>
+/* =====================================================================
+   Min Tablå – fristående app. Katalogdata hämtas som JSON från GitHub
+   (uppdateras dagligen av en GitHub Action). Allt personligt sparas
+   bara i den här enheten.
+   ===================================================================== */
+const DAY = 864e5;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtD = (d, o) => new Date(d).toLocaleDateString("sv-SE", o || {weekday:"short", day:"numeric", month:"short"});
+const fmtT = d => new Date(d).toLocaleTimeString("sv-SE", {hour:"2-digit", minute:"2-digit"});
+const sod = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+const low = s => String(s||"").toLowerCase().trim();
+function at(days, h=0, m=0){ const d = sod(new Date()); d.setDate(d.getDate()+days); d.setHours(h,m,0,0); return d.toISOString(); }
+function weekday(wd, h, m, weeks=0){ const d = new Date(); d.setHours(h,m,0,0); d.setDate(d.getDate() + ((wd - d.getDay() + 7) % 7) + 7*weeks); return d.toISOString(); }
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove("show"), 2800); }
+
+/* ---------- Installerbar app: manifest skapas i koden så filen är fristående ---------- */
+(function(){
+  try {
+    const base = location.href.split("#")[0];
+    const icon = "data:image/svg+xml," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='#0f1115'/><rect x='80' y='128' width='352' height='272' rx='40' fill='none' stroke='#ffb547' stroke-width='28'/><rect x='136' y='192' width='208' height='30' rx='15' fill='#ffb547'/><rect x='136' y='252' width='144' height='30' rx='15' fill='#ff7a59'/><rect x='136' y='312' width='176' height='30' rx='15' fill='#9aa1ae'/></svg>`);
+    const m = {name:"Min Tablå", short_name:"Min Tablå", lang:"sv", start_url:base, scope:base.replace(/[^/]*$/,""), display:"standalone",
+      background_color:"#0f1115", theme_color:"#0f1115", icons:[{src:icon, sizes:"any", type:"image/svg+xml", purpose:"any maskable"}]};
+    const l = document.createElement("link"); l.rel = "manifest";
+    l.href = "data:application/manifest+json," + encodeURIComponent(JSON.stringify(m)); document.head.appendChild(l);
+  } catch(e){}
+})();
+
+/* ---------- Tjänster ---------- */
+// De 15 största tjänsterna i Sverige (betal + gratis) + BritBox som ingår i TV4 Play.
+const SERVICES = {
+  svtplay:{name:"SVT Play", c:"#1f9d55", main:true}, tv4play:{name:"TV4 Play", c:"#d6204e", main:true},
+  britbox:{name:"BritBox", c:"#0b6e8a", parent:"tv4play", note:"ingår i TV4 Play", main:true},
+  netflix:{name:"Netflix", c:"#b20710", main:true}, prime:{name:"Prime Video", c:"#0a8fbf", main:true},
+  appletv:{name:"Apple TV", c:"#555b66", main:true}, disney:{name:"Disney+", c:"#1c5fb8", main:true},
+  viaplay:{name:"Viaplay", c:"#8b2bd1", main:true}, max:{name:"HBO Max", c:"#4a2bd6", main:true},
+  skyshowtime:{name:"SkyShowtime", c:"#5a40d6", main:true},
+  urplay:{name:"UR Play", c:"#b8862a"}, youtube:{name:"YouTube", c:"#e62117"}, sfanytime:{name:"SF Anytime", c:"#c2410c"},
+  mubi:{name:"Mubi", c:"#1d1d1d"}, crunchyroll:{name:"Crunchyroll", c:"#f47521"}, cineasterna:{name:"Cineasterna", c:"#7c3a5c", note:"via biblioteket"},
+  svt1:{name:"SVT1", c:"#2b7a4b", parent:"svtplay", hidden:true}, svt2:{name:"SVT2", c:"#3a6d8c", parent:"svtplay", hidden:true}
+};
+// En tjänst räknas som "min" om den är vald, eller om den ingår i en vald tjänst (BritBox i TV4 Play, SVT1/SVT2 i SVT Play).
+function hasSvc(id){ if (!id) return false; if (state.myServices.includes(id)) return true; const p = (SERVICES[id]||{}).parent; return !!p && state.myServices.includes(p) && !(state.excluded||[]).includes(id); }
+function svc(id){ return SERVICES[id] || (CATALOG.services||{})[id] || {name:id||"?", c:"#555"}; }
+function logoOf(id){ return (CATALOG.serviceLogos||{})[id] || (CATALOG.serviceLogos||{})[(SERVICES[id]||{}).parent]; }
+// Officiella logotyper kommer från TMDB via GitHub-datan; utan dem visas en färgad namnskylt.
+function chip(id, withName){
+  const s = svc(id), lg = (SERVICES[id]||{}).hidden ? null : logoOf(id);
+  if (lg) return `<span class="chip logo" title="${esc(s.name)}"><img src="${esc(lg)}" alt="${esc(s.name)}">${withName?`<span>${esc(s.name)}</span>`:""}</span>`;
+  return `<span class="chip" style="background:${s.c}">${esc(s.name)}</span>`;
+}
+
+/* ---------- Kategorier och underfilter ---------- */
+const FILMGENRES = ["Drama","Kriminal","Thriller","Skräck","Komedi","Sci-fi","Fantasy","Action","Äventyr","Historiskt","Krig","Romantik","Familj","Animerat"];
+const CATS = {
+  drama:  {name:"Dramaserier", subs:FILMGENRES},
+  film:   {name:"Filmer",      subs:FILMGENRES},
+  dok:    {name:"Dokumentärer",subs:["Krig","Politik","Omtalade"]},
+  sport:  {name:"Sport",       subs:["Fotboll","Ishockey","Övrig sport"]},
+  ovrigt: {name:"Övrigt",      subs:["Mat","Resor","Nyheter","Magasin","Politik","Aktuellt"]}
+};
+const OVRIGT_GENRES = ["Mat","Resor","Nyheter","Magasin","Politik","Aktuellt","Reality","Underhållning","Frågesport","Talkshow","Livsstil"];
+function category(p){
+  if (p.category && CATS[p.category]) return p.category;
+  const g = (p.genres||[]).map(low);
+  if (p.type === "sport" || g.some(x => /sport|fotboll|ishockey|hockey|skidor|alpint|handboll|tennis|friidrott|golf/.test(x))) return "sport";
+  if (g.includes("dokumentär")) return "dok";
+  if (p.type === "film") return "film";
+  if (g.some(x => OVRIGT_GENRES.map(low).includes(x))) return "ovrigt";
+  return "drama";
+}
+function matchesSub(p, sub){
+  const g = (p.genres||[]).map(low);
+  if (sub === "Omtalade") return g.includes("omtalad") || g.includes("omtalade") || (p.trend||0) >= 70;
+  if (sub === "Övrig sport") return !g.includes("fotboll") && !g.includes("ishockey");
+  return g.includes(low(sub));
+}
+function eroticOk(){ return state.search.erotic && !(+state.profile.age && +state.profile.age < 18); }
+const isErotic = p => (p.genres||[]).some(g => low(g) === "erotik");
+function subsFor(cat){ return CATS[cat].subs.concat((cat === "drama" || cat === "film") && eroticOk() ? ["Erotik"] : []); }
+function matchesFilter(p){
+  if (isErotic(p) && !eroticOk()) return false;
+  if (state.cat === "alla") return true;
+  if (category(p) !== state.cat) return false;
+  const subs = state.subs[state.cat] || [];
+  return !subs.length || subs.some(s => matchesSub(p, s));
+}
+
+/* ---------- Demodata (används tills GitHub-data finns) ---------- */
+function demoCatalog(){
+  const P = [];
+  const add = o => P.push(Object.assign({availability:[], episodes:[], directors:[], cast:[], trend:0}, o));
+  // Dramaserier
+  add({id:"bb", title:"Breaking Bad", type:"serie", category:"drama", year:2008, genres:["Drama","Kriminal","Thriller"], trend:62,
+    desc:"Kemiläraren Walter White får ett cancerbesked och börjar tillverka metamfetamin.", directors:["Vince Gilligan"], cast:["Bryan Cranston","Aaron Paul"],
+    availability:[{service:"netflix", from:at(-400), until:at(5,23,59)},{service:"max", from:at(6)}]});
+  add({id:"bcs", title:"Better Call Saul", type:"serie", category:"drama", year:2015, genres:["Drama","Kriminal"], trend:40,
+    desc:"Advokaten Jimmy McGill på vägen mot att bli Saul Goodman.", directors:["Vince Gilligan","Peter Gould"], cast:["Bob Odenkirk","Rhea Seehorn"],
+    availability:[{service:"netflix", from:at(-300)}]});
+  add({id:"mash", title:"M*A*S*H", type:"serie", category:"drama", year:1972, genres:["Komedi","Drama","Krig"], trend:12,
+    desc:"Läkare och sjuksköterskor på ett mobilt fältsjukhus under Koreakriget.", directors:["Larry Gelbart"], cast:["Alan Alda"],
+    availability:[{service:"disney", from:at(-500)}]});
+  add({id:"bron", title:"Bron", type:"serie", category:"drama", year:2011, genres:["Kriminal","Drama","Thriller"], trend:55,
+    desc:"En kropp hittas mitt på Öresundsbron och en svensk och en dansk polis tvingas samarbeta.", directors:["Hans Rosenfeldt"], cast:["Sofia Helin","Kim Bodnia"],
+    availability:[{service:"svtplay", from:at(-90), until:at(3,23,59)}]});
+  const st = []; for(let e=1;e<=4;e++) st.push({s:5,e,title:`Kapitel ${e}`, airs:at(12,9,0), service:"netflix"});
+  add({id:"st", title:"Stranger Things", type:"serie", category:"drama", year:2016, genres:["Sci-fi","Drama","Skräck"], trend:95,
+    desc:"Ungdomar i Hawkins möter övernaturliga krafter och hemliga experiment.", directors:["Matt Duffer","Ross Duffer"], cast:["Millie Bobby Brown","Winona Ryder"],
+    availability:[{service:"netflix", from:at(-900)}], episodes:st});
+  const sh = []; for(let w=0; w<4; w++) sh.push({s:2,e:w+1,title:`Avsnitt ${w+1}`, airs:weekday(3,9,0,w), service:"disney"});
+  add({id:"shogun", title:"Shōgun", type:"serie", category:"drama", year:2024, genres:["Drama","Historiskt","Äventyr"], trend:78,
+    desc:"En engelsk sjöman hamnar mitt i en maktkamp i 1600-talets Japan.", directors:["Rachel Kondo","Justin Marks"], cast:["Hiroyuki Sanada","Anna Sawai"],
+    availability:[{service:"disney", from:at(-200)}], episodes:sh});
+  add({id:"wallander", title:"Wallander", type:"serie", category:"drama", year:2005, genres:["Kriminal","Drama"], trend:20,
+    desc:"Kommissarie Kurt Wallander löser brott i Ystad.", directors:["Henning Mankell"], cast:["Krister Henriksson"],
+    availability:[{service:"viaplay", from:at(-365), until:at(20,23,59)},{service:"tv4play", from:at(21)}]});
+  add({id:"succ", title:"Succession", type:"serie", category:"drama", year:2018, genres:["Drama","Komedi"], trend:35,
+    desc:"Familjen Roy slåss om makten över mediekoncernen Waystar Royco.", directors:["Jesse Armstrong"], cast:["Brian Cox","Jeremy Strong"],
+    availability:[{service:"max", from:at(-700)}]});
+  add({id:"tlou", title:"The Last of Us", type:"serie", category:"drama", year:2023, genres:["Drama","Skräck","Sci-fi","Thriller"], trend:70,
+    desc:"Joel och Ellie korsar ett sönderfallet USA efter en svamppandemi.", directors:["Craig Mazin","Neil Druckmann"], cast:["Pedro Pascal","Bella Ramsey"],
+    availability:[{service:"max", from:at(-600)}]});
+  add({id:"vtn", title:"Vår tid är nu", type:"serie", category:"drama", year:2017, genres:["Drama","Historiskt"], trend:30,
+    desc:"Familjen Löwander och deras restaurang i efterkrigstidens Stockholm.", directors:["Malin Levanon"], cast:["Hedda Stiernstedt","Adam Lundgren"],
+    availability:[{service:"svtplay", from:at(9)}]});
+  add({id:"bear", title:"The Bear", type:"serie", category:"drama", year:2022, genres:["Drama","Komedi"], trend:48,
+    desc:"En stjärnkock tar över familjens smörgåsrestaurang i Chicago.", directors:["Christopher Storer"], cast:["Jeremy Allen White","Ayo Edebiri"],
+    availability:[{service:"disney", from:at(-150)}]});
+  // Filmer
+  add({id:"ove", title:"En man som heter Ove", type:"film", category:"film", year:2015, genres:["Drama","Komedi"], trend:28,
+    desc:"En butter änkeman får oväntat sällskap av nya grannar.", directors:["Hannes Holm"], cast:["Rolf Lassgård","Bahar Pars"],
+    availability:[{service:"netflix", from:at(-120)}]});
+  add({id:"prisoners", title:"Prisoners", type:"film", category:"film", year:2013, genres:["Thriller","Kriminal","Drama"], trend:44,
+    desc:"En far tar saken i egna händer när hans dotter försvinner.", directors:["Denis Villeneuve"], cast:["Hugh Jackman","Jake Gyllenhaal"],
+    availability:[{service:"netflix", from:at(-200), until:at(6,23,59)}]});
+  add({id:"dune2", title:"Dune: Del två", type:"film", category:"film", year:2024, genres:["Sci-fi","Äventyr","Drama"], trend:66,
+    desc:"Paul Atreides förenar sig med fremen för att hämnas sin familj.", directors:["Denis Villeneuve"], cast:["Timothée Chalamet","Rebecca Ferguson","Zendaya"],
+    availability:[{service:"max", from:at(-100)}]});
+  add({id:"hered", title:"Hereditary", type:"film", category:"film", year:2018, genres:["Skräck","Thriller","Drama"], trend:38,
+    desc:"En familj upptäcker mörka hemligheter efter mormoderns död.", directors:["Ari Aster"], cast:["Toni Collette"],
+    availability:[{service:"max", from:at(-300)}]});
+  add({id:"triangle", title:"Triangle of Sadness", type:"film", category:"film", year:2022, genres:["Komedi","Drama"], trend:33,
+    desc:"En lyxkryssning för superrika slutar i kaos.", directors:["Ruben Östlund"], cast:["Harris Dickinson","Charlbi Dean"],
+    availability:[{service:"svtplay", from:at(-20), until:at(40)}]});
+  add({id:"opp", title:"Oppenheimer", type:"film", category:"film", year:2023, genres:["Drama","Historiskt","Krig"], trend:52,
+    desc:"Berättelsen om mannen bakom atombomben.", directors:["Christopher Nolan"], cast:["Cillian Murphy","Emily Blunt"],
+    availability:[{service:"prime", from:at(-150)}]});
+  // Dokumentärer
+  const ug = []; for(let w=0; w<5; w++) ug.push({s:"",e:"",title:"Nytt reportage", airs:weekday(3,20,0,w), service:"svt1"});
+  add({id:"ug", title:"Uppdrag granskning", type:"serie", category:"dok", year:2026, genres:["Dokumentär","Politik","Omtalad"], trend:80,
+    desc:"Grävande reportage från SVT.", availability:[{service:"svtplay", from:at(-30)}], episodes:ug});
+  add({id:"vietnam", title:"The Vietnam War", type:"serie", category:"dok", year:2017, genres:["Dokumentär","Krig","Historiskt"], trend:25,
+    desc:"Ken Burns och Lynn Novicks stora dokumentärserie om Vietnamkriget.", directors:["Ken Burns","Lynn Novick"],
+    availability:[{service:"svtplay", from:at(-60), until:at(4,23,59)}]});
+  add({id:"murderer", title:"Making a Murderer", type:"serie", category:"dok", year:2015, genres:["Dokumentär","Kriminal","Omtalad"], trend:58,
+    desc:"Ett omdiskuterat rättsfall i Wisconsin följs under tio år.", directors:["Laura Ricciardi","Moira Demos"],
+    availability:[{service:"netflix", from:at(-800)}]});
+  add({id:"dokinifran", title:"Dokument inifrån", type:"serie", category:"dok", year:2026, genres:["Dokumentär","Politik"], trend:41,
+    desc:"Granskande dokumentärer om makt och samhälle.", availability:[{service:"svtplay", from:at(-10)}],
+    episodes:[{s:"",e:"",title:"Ny dokumentär", airs:weekday(0,21,0,1), service:"svt2"}]});
+  // Sport
+  const match = (id, title, sub, when, service, trend) => add({id, title, type:"sport", category:"sport", genres:[sub==="Övrig sport"?"Sport":sub, ...(sub==="Övrig sport"?[]:[])], trend,
+    desc:`Direktsändning. ${title}.`, availability:[{service, from:at(-1)}], episodes:[{s:"",e:"",title:"Direkt", airs:when, service}]});
+  match("shl1","SHL: Färjestad – Frölunda","Ishockey", weekday(4,19,0), "tv4play", 74);
+  match("shl2","SHL: Luleå – Skellefteå","Ishockey", weekday(6,15,15), "tv4play", 50);
+  match("pl1","Premier League: Arsenal – Liverpool","Fotboll", weekday(6,18,30), "viaplay", 88);
+  match("cl1","Champions League: matchkväll","Fotboll", weekday(2,21,0,1), "tv4play", 64);
+  add({id:"alpint", title:"Alpint: Världscupen", type:"sport", category:"sport", genres:["Sport","Alpint"], trend:46, desc:"Världscupen i alpint.",
+    availability:[{service:"svtplay", from:at(-1)}], episodes:[{s:"",e:"",title:"Slalom damer", airs:weekday(6,10,0), service:"svt1"},{s:"",e:"",title:"Slalom herrar", airs:weekday(0,10,0), service:"svt1"}]});
+  add({id:"langd", title:"Längdskidor: Världscupen", type:"sport", category:"sport", genres:["Sport","Längdskidor"], trend:57, desc:"Världscuppremiär.",
+    availability:[{service:"svtplay", from:at(-1)}], episodes:[{s:"",e:"",title:"Sprint", airs:weekday(6,11,30), service:"svt2"}]});
+  // Övrigt
+  const mk = []; for(let w=-1; w<=6; w++) mk.push({s:13, e:w+5, title:`Avsnitt ${w+5}`, airs:weekday(1,20,0,w), service:"tv4play"});
+  add({id:"smk", title:"Sveriges mästerkock", type:"serie", category:"ovrigt", year:2026, genres:["Mat","Reality"], trend:60,
+    desc:"Amatörkockar tävlar om titeln Sveriges mästerkock.", availability:[{service:"tv4play", from:at(-60)}], episodes:mk});
+  const ps = []; for(let w=0; w<=7; w++) ps.push({s:36, e:w+4, title:`Program ${w+4}`, airs:weekday(5,20,0,w), service:"svt1"});
+  add({id:"pasparet", title:"På spåret", type:"serie", category:"ovrigt", year:2026, genres:["Resor","Frågesport","Underhållning"], trend:72,
+    desc:"Reseprogram och frågesport där lag gissar vart tåget är på väg.", availability:[{service:"svtplay", from:at(-14)}], episodes:ps});
+  const rp = []; for(let d=0; d<7; d++) rp.push({s:"",e:"",title:"Kvällens sändning", airs:at(d,19,30), service:"svt1"});
+  add({id:"rapport", title:"Rapport", type:"serie", category:"ovrigt", genres:["Nyheter","Aktuellt"], trend:45, desc:"SVT:s nyhetsprogram.",
+    availability:[{service:"svtplay", from:at(-1000)}], episodes:rp});
+  add({id:"agenda", title:"Agenda", type:"serie", category:"ovrigt", genres:["Politik","Aktuellt","Magasin"], trend:36, desc:"Samhällsmagasin med politiska debatter.",
+    availability:[{service:"svtplay", from:at(-100)}], episodes:[{s:"",e:"",title:"Veckans debatt", airs:weekday(0,21,15), service:"svt2"}]});
+  add({id:"kallafakta", title:"Kalla fakta", type:"serie", category:"ovrigt", genres:["Magasin","Aktuellt"], trend:42, desc:"TV4:s granskande magasin.",
+    availability:[{service:"tv4play", from:at(-100)}], episodes:[{s:"",e:"",title:"Nytt avsnitt", airs:weekday(0,21,30), service:"tv4play"}]});
+  add({id:"babygirl", title:"Babygirl", type:"film", category:"film", year:2024, genres:["Erotik","Thriller","Drama"], trend:47,
+    desc:"En framgångsrik vd inleder en riskabel affär med en mycket yngre praktikant.", directors:["Halina Reijn"], cast:["Nicole Kidman","Harris Dickinson"],
+    availability:[{service:"prime", from:at(-40)}]});
+  add({id:"normal", title:"Normal People", type:"serie", category:"drama", year:2020, genres:["Drama","Romantik","Erotik"], trend:31,
+    desc:"Två unga människor från samma irländska småstad i en kärlekshistoria med många turer.", directors:["Lenny Abrahamson"], cast:["Daisy Edgar-Jones","Paul Mescal"],
+    availability:[{service:"svtplay", from:at(-25), until:at(30)}]});
+  add({id:"midsomer", title:"Morden i Midsomer", type:"serie", category:"drama", year:1997, genres:["Kriminal","Drama"], trend:26,
+    desc:"Kommissarie Barnaby utreder mord i idylliska engelska byar.", cast:["John Nettles","Neil Dudgeon"],
+    availability:[{service:"britbox", from:at(-80)}]});
+  add({id:"severance", title:"Severance", type:"serie", category:"drama", year:2022, genres:["Thriller","Sci-fi","Drama"], trend:68,
+    desc:"Anställda på ett företag får sina minnen från jobb och fritid kirurgiskt åtskilda.", directors:["Dan Erickson","Ben Stiller"], cast:["Adam Scott","Britt Lower"],
+    availability:[{service:"appletv", from:at(-300)}]});
+  add({id:"anatomy", title:"Anatomy of a Fall", type:"film", category:"film", year:2023, genres:["Drama","Thriller","Kriminal"], trend:29,
+    desc:"En kvinna misstänks för makens död i en fransk fjällstuga.", directors:["Justine Triet"], cast:["Sandra Hüller"],
+    availability:[{service:"mubi", from:at(-30)}]});
+  // Demobetyg (i riktig data kommer de från OMDb/TMDB)
+  const R = {bb:[9.5,"96%",99],bcs:[9.0,"98%",87],mash:[8.4],bron:[8.6],st:[8.7,"91%",76],shogun:[8.6,"99%",85],wallander:[7.6],succ:[8.9,"94%",87],
+    tlou:[8.7,"96%",84],vtn:[7.9],bear:[8.5,"99%",92],ove:[7.7,"91%",70],prisoners:[8.1,"81%",70],dune2:[8.5,"92%",79],hered:[7.3,"90%",87],
+    triangle:[7.3,"71%",63],opp:[8.3,"93%",90],vietnam:[9.1,"100%",93],murderer:[8.5,"96%",84],babygirl:[6.0,"77%",71],normal:[8.4,"91%",82],
+    midsomer:[7.9],severance:[8.7,"97%",86],anatomy:[7.7,"96%",86],ug:[7.6],smk:[6.4],pasparet:[7.8],agenda:[6.5],kallafakta:[7.2]};
+  P.forEach(p => { const r = R[p.id]; if (r) p.ratings = {imdb:r[0], ...(r[1]?{rt:r[1]}:{}), ...(r[2]?{mc:String(r[2])}:{})}; });
+  // Liknande-listor (i riktig data kommer de från TMDB)
+  const sim = {bb:["bcs","bron","succ"], bcs:["bb","succ"], st:["tlou","hered"], dune2:["opp","tlou"], prisoners:["hered","bron"]};
+  P.forEach(p => p.similar = sim[p.id] || []);
+  return {updated:null, demo:true, programs:P};
+}
+
+/* ---------- Användarens tillstånd (bara på enheten) ---------- */
+const KEY = "mintabla.user.v2", CATKEY = "mintabla.catalog.v2";
+function defaults(){
+  return { liked:["bcs","smk"], disliked:[], watched:["bcs"],
+    favorites:[{type:"titel", name:"Breaking Bad"},{type:"regissor", name:"Denis Villeneuve"}],
+    profile:{age:"", gender:"", interests:["Ishockey","Mat"]},
+    favGenres:["Kriminal"], myServices:["svtplay","netflix","tv4play","disney","urplay"], excluded:[],
+    view:"vecka", anchor:new Date().toISOString(), onlyMine:false, cat:"alla", subs:{}, overrides:{},
+    settings:{aiProvider:"anthropic", aiKey:"", aiModel:"claude-sonnet-5-5", aiBase:"https://api.openai.com/v1",
+      dataUrl:"data/katalog.json", notify:false, lastNotified:"", textScale:1, ytKey:""},
+    search:{youtube:false, dailymotion:false, vimeo:false, justwatch:true, erotic:false},
+    exp:{size:"normal", onlyMarked:false, desc:true, to:""} };
+}
+let state;
+try { state = JSON.parse(localStorage.getItem(KEY)) || defaults(); } catch(e){ state = defaults(); }
+state = Object.assign(defaults(), state);
+state.settings = Object.assign(defaults().settings, state.settings);
+state.profile = Object.assign(defaults().profile, state.profile);
+state.search = Object.assign(defaults().search, state.search);
+state.exp = Object.assign(defaults().exp, state.exp);
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+
+let CATALOG = demoCatalog();
+let dataStatus = "Demodata";
+try { const c = JSON.parse(localStorage.getItem(CATKEY)); if (c && c.programs && c.programs.length){ CATALOG = c; dataStatus = "Sparad data"; } } catch(e){}
+
+function programs(){ return CATALOG.programs; }
+const byId = id => programs().find(p => p.id === id);
+function findTitle(name){ const n = low(name); return programs().find(p => low(p.title) === n) || programs().find(p => low(p.title).includes(n) && n.length > 3); }
+function applyOverrides(){
+  for (const [id, o] of Object.entries(state.overrides||{})){
+    const p = byId(id); if (!p) continue;
+    for (const a of p.availability||[]) if (o[a.service] !== undefined) a.until = o[a.service] || undefined;
+  }
+}
+applyOverrides();
+
+async function loadData(manual){
+  const url = state.settings.dataUrl; if (!url) return;
+  try {
+    const r = await fetch(url + (url.includes("?") ? "&" : "?") + "t=" + Date.now(), {cache:"no-store"});
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json();
+    if (!j.programs || !j.programs.length) throw new Error("tom fil");
+    CATALOG = j; applyOverrides();
+    try { localStorage.setItem(CATKEY, JSON.stringify(j)); } catch(e){}
+    dataStatus = "Data " + (j.updated ? fmtD(j.updated, {day:"numeric", month:"short"}) + " " + fmtT(j.updated) : "hämtad");
+    render(); if (manual) toast(`Hämtade ${j.programs.length} program`);
+  } catch(e){
+    if (manual) toast("Kunde inte hämta data (" + e.message + "). Visar " + dataStatus.toLowerCase() + ".");
+  }
+}
+
+/* ---------- Logik ---------- */
+function currentAvail(p, t = Date.now()){ return (p.availability||[]).filter(a => new Date(a.from) <= t && (!a.until || new Date(a.until) > t)); }
+function futureAvail(p, t = Date.now()){ return (p.availability||[]).filter(a => new Date(a.from) > t).sort((a,b)=>new Date(a.from)-new Date(b.from)); }
+function leaving(p, days = 7){
+  const t = Date.now(), lim = t + days*DAY;
+  return (p.availability||[]).filter(a => a.until && new Date(a.until) > t && new Date(a.until) <= lim).map(a => {
+    const next = (p.availability||[]).find(b => b !== a && new Date(b.from) >= new Date(a.until) - DAY);
+    const stillOther = currentAvail(p).find(b => b !== a && (!b.until || new Date(b.until) > new Date(a.until)));
+    return {...a, movesTo: next || null, alsoOn: stillOther || null};
+  });
+}
+function whereText(p){
+  const cur = currentAvail(p);
+  if (cur.length) return cur.map(a => chip(a.service)).join("");
+  const f = futureAvail(p)[0];
+  if (f) return `<span class="m">Kommer på ${esc(svc(f.service).name)} ${fmtD(f.from)}</span>`;
+  return `<span class="m">Finns inte i någon tjänst just nu</span>`;
+}
+function nextEpisode(p){ const t = Date.now() - 2*3600e3; return (p.episodes||[]).filter(e => new Date(e.airs) > t).sort((a,b)=>new Date(a.airs)-new Date(b.airs))[0]; }
+const people = p => [...(p.directors||[]), ...(p.cast||[])];
+function sim(a, b){
+  if (!a || !b || a.id === b.id) return 0;
+  let s = 0;
+  const ga = new Set((a.genres||[]).map(low));
+  s += (b.genres||[]).filter(g => ga.has(low(g))).length * 2;
+  const pa = new Set(people(a).map(low)); s += people(b).filter(x => pa.has(low(x))).length * 3;
+  if ((a.similar||[]).includes(b.id) || (b.similar||[]).includes(a.id)) s += 6;
+  if (category(a) === category(b)) s += 1;
+  return s;
+}
+function personMatch(p, fav){
+  const n = low(fav.name);
+  const list = fav.type === "regissor" ? p.directors : fav.type === "skadespelare" ? p.cast : people(p);
+  return (list||[]).some(x => low(x) === n || low(x).includes(n) && n.length > 4);
+}
+function favoriteHits(fav){
+  if (fav.type === "titel"){
+    const src = findTitle(fav.name); if (!src) return {src:null, list:[]};
+    const list = programs().filter(p => p.id !== src.id).map(p => ({p, s:sim(src, p)})).filter(x => x.s >= 5).sort((a,b)=>b.s-a.s).map(x=>x.p);
+    return {src, list};
+  }
+  return {src:null, list: programs().filter(p => personMatch(p, fav))};
+}
+function interestHit(p){
+  const ints = (state.profile.interests||[]).map(low);
+  return ints.find(i => (p.genres||[]).some(g => low(g) === i) || low(p.title).includes(i) || (i === "historia" && (p.genres||[]).map(low).includes("historiskt")));
+}
+function genreWeights(){
+  const w = {};
+  const add = (id, v) => { const p = byId(id); if(p) (p.genres||[]).forEach(g => w[g] = (w[g]||0) + v); };
+  state.liked.forEach(id => add(id, 2)); state.watched.forEach(id => add(id, 1)); state.disliked.forEach(id => add(id, -2));
+  state.favGenres.forEach(g => w[g] = (w[g]||0) + 3);
+  state.favorites.filter(f => f.type === "titel").forEach(f => { const p = findTitle(f.name); if (p) add(p.id, 2); });
+  return w;
+}
+function favTitleIds(){ return state.favorites.filter(f=>f.type==="titel").map(f => findTitle(f.name)).filter(Boolean).map(p=>p.id); }
+function recommend(){
+  const w = genreWeights(), favIds = favTitleIds();
+  const seen = new Set([...state.disliked, ...state.watched, ...state.liked, ...favIds]);
+  return programs().filter(p => !seen.has(p.id) && category(p) !== "sport" && matchesFilter(p)).map(p => {
+    let score = (p.genres||[]).reduce((s,g)=>s+(w[g]||0),0), reason = "";
+    for (const f of state.favorites){
+      if (f.type === "titel"){ const src = findTitle(f.name); const s = sim(src, p); if (s >= 5){ score += s/2; reason = reason || `Liknar ${src.title}`; } }
+      else if (personMatch(p, f)){ score += 6; reason = reason || (f.type === "regissor" ? `Regi: ${f.name}` : `Med ${f.name}`); }
+    }
+    const ih = interestHit(p); if (ih){ score += 2; reason = reason || `Matchar ditt intresse ${ih}`; }
+    const avail = currentAvail(p).concat(futureAvail(p));
+    if (avail.some(a => hasSvc(a.service))) score += 2;
+    if (!avail.length) score -= 5;
+    score += (p.trend||0) / 50;
+    if (!reason){
+      const src = [...state.liked, ...state.watched].map(byId).filter(Boolean).map(q => ({q, n:(q.genres||[]).filter(g => (p.genres||[]).includes(g)).length})).sort((a,b)=>b.n-a.n)[0];
+      if (src && src.n) reason = `För att du gillade ${src.q.title}`;
+      else { const fg = (p.genres||[]).find(g => state.favGenres.includes(g)); if (fg) reason = `Du gillar ${fg.toLowerCase()}`; }
+    }
+    return {p, score, reason};
+  }).filter(x => x.score > 1).sort((a,b)=>b.score-a.score);
+}
+function trending(filterFn){
+  return programs().filter(p => (p.trend||0) > 0 && !state.disliked.includes(p.id) && filterFn(p)).sort((a,b)=>(b.trend||0)-(a.trend||0));
+}
+function follows(p){ return state.liked.includes(p.id) || state.watched.includes(p.id) || favTitleIds().includes(p.id) || state.favorites.some(f => f.type!=="titel" && personMatch(p,f)); }
+
+function range(){
+  const a = new Date(state.anchor); let s, e;
+  if (state.view === "dag"){ s = sod(a); e = new Date(s.getTime()+DAY); }
+  else if (state.view === "vecka"){ s = sod(a); s.setDate(s.getDate() - ((s.getDay()+6)%7)); e = new Date(s); e.setDate(e.getDate()+7); }
+  else { s = new Date(a.getFullYear(), a.getMonth(), 1); e = new Date(a.getFullYear(), a.getMonth()+1, 1); }
+  return {s, e};
+}
+function epLabel(ep){ return (ep.s !== "" && ep.s != null ? `S${ep.s} E${ep.e}` + (ep.title ? " · " : "") : "") + (ep.title || ""); }
+function events(s, e){
+  const ev = [], mine = id => !state.onlyMine || hasSvc(id);
+  for (const p of programs().filter(p => !state.disliked.includes(p.id) && matchesFilter(p))){
+    for (const ep of p.episodes||[]){
+      const t = new Date(ep.airs); const sv = ep.service || (currentAvail(p,t)[0]||{}).service;
+      if (t >= s && t < e && mine(sv)) ev.push({t, p, kind:"ep", service:sv, label:epLabel(ep), timeKnown: ep.timeKnown !== false});
+    }
+    if (category(p) === "sport") continue;
+    for (const a of p.availability||[]){
+      const f = new Date(a.from), u = a.until && new Date(a.until);
+      if (f >= s && f < e && f > Date.now() - 30*DAY && mine(a.service)) ev.push({t:f, p, kind:"new", service:a.service, label:`Ny på ${svc(a.service).name}`});
+      if (u && u >= s && u < e && mine(a.service)){
+        const nx = (p.availability||[]).find(b => b!==a && new Date(b.from) >= u - DAY);
+        ev.push({t:u, p, kind:"leave", service:a.service, label:`Sista dag på ${svc(a.service).name}` + (nx ? ` → sedan på ${svc(nx.service).name}` : "")});
+      }
+    }
+  }
+  return ev.sort((a,b)=>a.t-b.t);
+}
+
+/* ---------- Byggstenar ---------- */
+function poster(p, rank){
+  const rk = rank ? `<span class="rk">${rank}</span>` : "";
+  if (p.poster) return `<div class="poster"><img alt="" loading="lazy" src="${esc(p.poster)}">${rk}</div>`;
+  let h = 0; for (const c of p.title) h = (h*31 + c.charCodeAt(0)) % 360;
+  const ini = p.title.replace(/^(SHL|Premier League|Champions League|Alpint|Längdskidor):\s*/,"").replace(/[^A-Za-zÅÄÖåäö0-9]/g,"").slice(0,2);
+  return `<div class="poster" style="background:linear-gradient(160deg,hsl(${h} 70% 62%),hsl(${(h+40)%360} 65% 45%))">${esc(ini)}${rk}</div>`;
+}
+function meta(p){
+  const typ = {film:"Film", sport:"Sport"}[p.type] || (category(p)==="dok" ? "Dokumentär" : "Serie");
+  return [typ, p.year, (p.genres||[]).filter(g => low(g)!=="dokumentär").slice(0,3).join(", ")].filter(Boolean).join(" · ");
+}
+function progRow(p, extra="", rank){
+  return `<div class="card prog" data-open="${p.id}">${poster(p, rank)}<div class="grow">
+    <div class="t">${esc(p.title)}</div><div class="m">${esc(meta(p))}</div>
+    <div>${whereText(p)}${ratingChips(p, true)}</div>${extra}</div>${heart(p)}</div>`;
+}
+function isMarked(p){ return state.favorites.some(f => f.type === "titel" && findTitle(f.name)?.id === p.id); }
+function heart(p){ const on = isMarked(p); return `<button class="heart ${on?"on":""}" data-heart="${p.id}" aria-label="${on?"Ta bort favoritmarkering":"Markera som favorit"}" title="Favorit">♥</button>`; }
+function toggleMark(id){
+  const p = byId(id); const i = state.favorites.findIndex(f => f.type === "titel" && findTitle(f.name)?.id === id);
+  if (i >= 0) state.favorites.splice(i, 1); else state.favorites.push({type:"titel", name:p.title});
+  save(); toast(i >= 0 ? `${p.title} avmarkerad` : `♥ ${p.title} markerad som favorit`);
+}
+function imdbUrl(p){ return p.imdbId ? `https://www.imdb.com/title/${p.imdbId}/` : `https://www.imdb.com/find/?q=${encodeURIComponent(p.title + (p.year?" "+p.year:""))}`; }
+function ratingChips(p, compact){
+  const r = p.ratings || {}; let h = "";
+  if (r.imdb) h += `<a class="rt imdb" href="${imdbUrl(p)}" target="_blank" rel="noopener" title="IMDb${r.imdbVotes?" · "+r.imdbVotes+" röster":""}">IMDb ${(+r.imdb).toFixed(1)}</a>`;
+  if (r.rt) h += `<a class="rt rtom" href="https://www.rottentomatoes.com/search?search=${encodeURIComponent(p.title)}" target="_blank" rel="noopener" title="Rotten Tomatoes">🍅 ${esc(r.rt)}</a>`;
+  if (!compact && r.mc) h += `<a class="rt mc" href="https://www.metacritic.com/search/${encodeURIComponent(p.title)}/" target="_blank" rel="noopener" title="Metacritic">MC ${esc(r.mc)}</a>`;
+  if (r.tmdb && (!compact || !r.imdb)) h += `<a class="rt tmdb" href="${p.tmdb?`https://www.themoviedb.org/${p.tmdb.kind}/${p.tmdb.id}`:`https://www.themoviedb.org/search?query=${encodeURIComponent(p.title)}`}" target="_blank" rel="noopener" title="TMDB">TMDB ${(+r.tmdb).toFixed(1)}</a>`;
+  return h ? (compact ? " " : "") + h : "";
+}
+function ratingText(p){ const r = p.ratings||{}; return [r.imdb?`IMDb ${(+r.imdb).toFixed(1)}`:"", r.rt?`RT ${r.rt}`:"", r.mc?`MC ${r.mc}`:"", !r.imdb && r.tmdb?`TMDB ${(+r.tmdb).toFixed(1)}`:""].filter(Boolean).join(" · "); }
+function mini(p, sub, rank){
+  const r = p.ratings||{}; const rt = r.imdb ? ` · ★ ${(+r.imdb).toFixed(1)}` : r.tmdb ? ` · ★ ${(+r.tmdb).toFixed(1)}` : "";
+  return `<div class="mini" data-open="${p.id}">${poster(p, rank)}<div class="t">${isMarked(p)?'<span style="color:#ff5d8a">♥</span> ':""}${esc(p.title)}</div><div class="m">${sub}${rt}</div></div>`;
+}
+function miniWhere(p){ const a = currentAvail(p)[0] || futureAvail(p)[0]; return a ? esc(svc(a.service).name) : "Ej tillgänglig"; }
+function catBar(){
+  let h = `<div class="catbar">` + [["alla","Alla"], ...Object.entries(CATS).map(([k,v])=>[k,v.name])]
+    .map(([k,n]) => `<button class="tag ${state.cat===k?"on":""}" data-cat="${k}">${n}</button>`).join("") + `</div>`;
+  if (state.cat !== "alla"){
+    const subs = state.subs[state.cat] || [];
+    h += `<div class="subbar">` + subsFor(state.cat).map(s => `<button class="tag ${subs.includes(s)?"on":""}" data-sub="${esc(s)}">${esc(s)}</button>`).join("") +
+      (subs.length ? `<button class="tag" data-subclear="1">Rensa ✕</button>` : "") + `</div>`;
+  }
+  return h;
+}
+function filterLabel(){
+  if (state.cat === "alla") return "";
+  const subs = state.subs[state.cat] || [];
+  return CATS[state.cat].name + (subs.length ? " · " + subs.join(", ") : "");
+}
+
+/* ---------- Vyer ---------- */
+function viewTips(){
+  let h = catBar();
+  const fl = filterLabel();
+  // Lämnar snart
+  const warns = programs().filter(matchesFilter).flatMap(p => leaving(p).map(l => ({p, l})))
+    .filter(x => follows(x.p) || recommend().slice(0,20).some(r => r.p.id === x.p.id) || hasSvc(x.l.service))
+    .sort((a,b)=>new Date(a.l.until)-new Date(b.l.until));
+  if (warns.length){
+    h += `<h2>Lämnar snart <small>inom 7 dagar</small></h2>`;
+    h += warns.map(({p,l}) => `<div class="card prog warn" data-open="${p.id}">${poster(p)}<div class="grow">
+      <div class="lbl">Sista dag ${fmtD(l.until)}</div><div class="t">${esc(p.title)}</div>
+      <div class="m">Försvinner från ${esc(svc(l.service).name)}${l.movesTo ? ` – finns sedan på <b style="color:var(--txt)">${esc(svc(l.movesTo.service).name)}</b> från ${fmtD(l.movesTo.from)}` : l.alsoOn ? ` – finns kvar på ${esc(svc(l.alsoOn.service).name)}` : ""}</div></div></div>`).join("");
+  }
+  // Trendar just nu
+  h += `<h2>Trendar just nu${fl ? `<small>${esc(fl)}</small>` : ""}</h2>`;
+  if (state.cat === "alla"){
+    for (const [k, c] of Object.entries(CATS)){
+      const list = trending(p => category(p) === k && (!isErotic(p) || eroticOk())).slice(0, 10);
+      if (!list.length) continue;
+      h += `<div class="rowhead"><b>${c.name}</b><span data-cat="${k}" style="cursor:pointer">Visa alla ›</span></div><div class="hscroll">` +
+        list.map((p,i) => mini(p, miniWhere(p), i+1)).join("") + `</div>`;
+    }
+  } else {
+    const list = trending(matchesFilter).slice(0, 10);
+    h += list.length ? list.map((p,i) => progRow(p, "", i+1)).join("") : `<div class="empty">Inga trender för det här urvalet just nu.</div>`;
+  }
+  // Sport: kommande sändningar
+  if (state.cat === "sport" || state.cat === "alla"){
+    const live = programs().filter(p => category(p) === "sport" && matchesFilter(p))
+      .flatMap(p => (p.episodes||[]).filter(e => new Date(e.airs) > Date.now() - 2*3600e3 && new Date(e.airs) - Date.now() < 7*DAY).map(e => ({p, e})))
+      .sort((a,b)=>new Date(a.e.airs)-new Date(b.e.airs)).slice(0, 12);
+    if (live.length){
+      h += `<h2>Sport kommande vecka</h2>` + live.map(({p,e}) => `<div class="ev" data-open="${p.id}"><div class="time">${fmtT(e.airs)}</div>
+        <div style="flex:1"><div style="font-weight:700">${esc(p.title)}</div><div class="lab">${fmtD(e.airs,{weekday:"long",day:"numeric",month:"short"})}${e.title&&e.title!=="Direkt"?" · "+esc(e.title):""}</div>${chip(e.service)}</div></div>`).join("");
+    }
+  }
+  // Liknande dina favoriter
+  if (state.favorites.length && state.cat !== "sport"){
+    let fh = "";
+    for (const f of state.favorites){
+      const {src, list} = favoriteHits(f);
+      const lst = list.filter(p => matchesFilter(p) && !state.disliked.includes(p.id)).slice(0, 10);
+      const head = f.type === "titel" ? `Liknar ${esc(src ? src.title : f.name)}` : f.type === "regissor" ? `Regi: ${esc(f.name)}` : `Med ${esc(f.name)}`;
+      if (lst.length) fh += `<div class="rowhead"><b>${head}</b></div><div class="hscroll">${lst.map(p => mini(p, miniWhere(p))).join("")}</div>`;
+      else if (state.cat === "alla") fh += `<div class="rowhead"><b>${head}</b><span class="btn sm" data-aifav="${esc(f.type)}|${esc(f.name)}">✨ Fråga AI</span></div>
+        <div class="hint" style="margin:0 2px 8px">Inget i katalogen än. AI kan föreslå titlar, och lägger du in favoriten i GitHub-listan hämtas liknande program vid nästa uppdatering.</div>`;
+    }
+    if (fh) h += `<h2>Utifrån dina favoriter</h2>` + fh;
+  }
+  // På gång
+  if (state.cat !== "sport"){
+    const upcoming = programs().filter(p => !state.disliked.includes(p.id) && matchesFilter(p) && category(p) !== "sport" && !["rapport"].includes(p.id))
+      .map(p => ({p, ep: nextEpisode(p)})).filter(x => x.ep && new Date(x.ep.airs) - Date.now() < 14*DAY && (follows(x.p) || (x.p.trend||0) > 40))
+      .sort((a,b)=>new Date(a.ep.airs)-new Date(b.ep.airs)).slice(0, 12);
+    if (upcoming.length){
+      h += `<h2>På gång <small>nya avsnitt & premiärer</small></h2><div class="hscroll">` +
+        upcoming.map(({p,ep}) => mini(p, `${fmtD(ep.airs)}${ep.timeKnown===false?"":" "+fmtT(ep.airs)} · ${esc(svc(ep.service||(currentAvail(p)[0]||{}).service).name)}`)).join("") + `</div>`;
+    }
+    const recs = recommend().slice(0, 10);
+    h += `<h2>Tips för dig</h2>` + (recs.length ? recs.map(r => progRow(r.p, r.reason ? `<div class="reason">${esc(r.reason)}</div>` : "")).join("")
+       : `<div class="empty">Lägg till favoriter, intressen eller gilla några program under <b>Mitt</b> så får du tips.</div>`);
+  }
+  h += `<h2>Fråga AI</h2><div class="card">
+    <div style="display:flex;flex-wrap:wrap;margin-bottom:4px">
+      <button class="tag" data-q="Vad ska jag se ikväll?">Vad ska jag se ikväll?</button>
+      <button class="tag" data-q="Ge mig tre tips i en genre jag inte brukar se.">Något nytt</button>
+      <button class="tag" data-q="Vad bör jag hinna se innan det försvinner?">Innan det försvinner</button>
+      <button class="tag" data-q="Vilken sport är värd att se den här veckan?">Veckans sport</button>
+    </div>
+    <textarea id="aiq" placeholder="Fråga något, t.ex. en film som liknar Prisoners men lite lättare…"></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn pri" id="aiask">Fråga</button></div>
+    <div class="ai-out" id="aiout" style="margin-top:12px"></div></div>`;
+  if (CATALOG.demo) h += `<div class="demo">Visar demodata. Riktig data hämtas från GitHub när appen ligger där (se Inställningar).</div>`;
+  return h;
+}
+
+function viewTabla(){
+  const {s, e} = range();
+  let title;
+  if (state.view === "dag") title = fmtD(s, {weekday:"long", day:"numeric", month:"long"});
+  else if (state.view === "vecka"){ const l = new Date(e - 1); title = `${fmtD(s,{day:"numeric",month:"short"})} – ${fmtD(l,{day:"numeric",month:"short"})}`; }
+  else title = s.toLocaleDateString("sv-SE", {month:"long", year:"numeric"});
+  let h = catBar() + `<div class="seg" style="margin-top:12px">${["dag","vecka","månad"].map(v=>`<button data-view="${v}" class="${state.view===v?"on":""}">${v[0].toUpperCase()+v.slice(1)}</button>`).join("")}</div>
+  <div class="navrow"><button class="btn" data-step="-1" aria-label="Föregående">‹</button><div style="text-align:center"><b>${esc(title)}</b><div><button class="btn sm" data-step="0" style="margin-top:4px">Idag</button></div></div><button class="btn" data-step="1" aria-label="Nästa">›</button></div>
+  <div class="row" style="flex-wrap:wrap"><label class="toggle" style="flex:1 1 200px"><input type="checkbox" id="onlymine" ${state.onlyMine?"checked":""}> Visa bara mina tjänster</label>
+  <div class="row" style="flex:0 0 auto;margin-top:10px"><button class="btn sm" id="openExport" title="PDF / mejl (Ctrl/⌘ E)">📄 PDF & mejl</button><button class="btn sm" id="quickPrint" title="Skriv ut (Ctrl/⌘ P)">🖨 Skriv ut</button></div></div>`;
+  const ev = events(s, e);
+  if (!ev.length) return h + `<div class="empty">Inget i tablån för den här perioden${filterLabel() ? " och det här urvalet" : ""}.</div>`;
+  let lastDay = "", today = sod(new Date()).getTime();
+  for (const x of ev){
+    const dk = sod(x.t).getTime();
+    if (dk !== lastDay){ lastDay = dk; h += `<div class="day ${dk===today?"today":""}">${dk===today?"Idag · ":""}${fmtD(x.t,{weekday:"long",day:"numeric",month:"long"})}</div>`; }
+    h += `<div class="ev ${x.kind==="leave"?"leave":x.kind==="new"?"new":""}" data-open="${x.p.id}">
+      <div class="time">${x.kind==="leave"?"SISTA":x.kind==="new"?"NY":(x.timeKnown?fmtT(x.t):"—")}</div>
+      <div style="flex:1"><div style="font-weight:700">${esc(x.p.title)}</div><div class="lab">${esc(x.label)}</div>${chip(x.service)}${ratingChips(x.p, true)}</div>${heart(x.p)}</div>`;
+  }
+  return h;
+}
+
+const INTEREST_SUGG = ["Fotboll","Ishockey","Mat","Resor","Historia","Politik","Natur","Musik","Kriminal","Vetenskap","Konst","Design"];
+const FAVTYPES = {titel:"Serie/film", regissor:"Regissör", skadespelare:"Skådespelare"};
+function viewMina(){
+  const P = state.profile;
+  const list = (ids, empty) => ids.length ? ids.map(byId).filter(Boolean).map(p => progRow(p)).join("") : `<div class="empty">${empty}</div>`;
+  return `<h2>Min profil</h2><div class="card">
+    <div class="row"><div><label class="f" style="margin-top:0">Ålder</label><input type="number" id="pAge" min="5" max="110" inputmode="numeric" value="${esc(P.age)}" placeholder="t.ex. 45"></div>
+    <div><label class="f" style="margin-top:0">Kön</label><select id="pGender">${["","Kvinna","Man","Icke-binär","Vill inte ange"].map(g=>`<option value="${g}" ${P.gender===g?"selected":""}>${g||"Välj…"}</option>`).join("")}</select></div></div>
+    <label class="f">Intressen</label>
+    <div>${(P.interests||[]).map((t,i)=>`<button class="tag on" data-delint="${i}">${esc(t)}<span class="x">✕</span></button>`).join("")}</div>
+    <div class="row" style="margin-top:4px"><input type="text" id="intIn" placeholder="Lägg till intresse…"><button class="btn" id="intAdd" style="flex:none">Lägg till</button></div>
+    <div style="margin-top:8px">${INTEREST_SUGG.filter(s => !(P.interests||[]).includes(s)).map(s=>`<button class="tag" data-int="${esc(s)}">+ ${esc(s)}</button>`).join("")}</div>
+    <div class="hint">Profilen används för tips och AI-frågor och sparas bara i den här enheten.</div></div>
+
+  <h2>Mina favoriter</h2><div class="card">
+    <div class="hint" style="margin-top:0">Skriv in serier, filmer, regissörer eller skådespelare du gillar, så får du tips på liknande.</div>
+    <div class="row" style="margin-top:10px"><select id="favType" style="flex:0 0 140px">${Object.entries(FAVTYPES).map(([k,v])=>`<option value="${k}">${v}</option>`).join("")}</select>
+      <input type="text" id="favName" placeholder="Namn eller titel" list="favlist"></div>
+    <datalist id="favlist">${programs().map(p=>`<option value="${esc(p.title)}">`).join("")}</datalist>
+    <div class="row" style="margin-top:8px"><button class="btn pri" id="favAdd">Lägg till favorit</button></div>
+    ${Object.entries(FAVTYPES).map(([k,v]) => { const fs = state.favorites.map((f,i)=>({f,i})).filter(x=>x.f.type===k);
+      return fs.length ? `<h4>${v}</h4><div>${fs.map(({f,i})=>`<button class="tag on" data-delfav="${i}">${esc(f.name)}<span class="x">✕</span></button>`).join("")}</div>` : ""; }).join("")}
+  </div>
+
+  <h2>Mina tjänster <small>${Object.keys(SERVICES).filter(k=>!SERVICES[k].hidden && hasSvc(k)).length} aktiva</small></h2>
+  <div class="card">${Object.entries(SERVICES).filter(([,s])=>!s.hidden).map(([id,s],i,arr) => `${!s.main && arr[i-1] && arr[i-1][1].main ? `<h4>Fler tjänster</h4>` : i===0 ? `<h4 style="margin-top:0">De största</h4>` : ""}<label class="avail" style="cursor:pointer${s.parent?";padding-left:22px":""}">
+      <span>${chip(id, true)}${s.note?`<span style="color:var(--mut);font-size:12px">${esc(s.note)}</span>`:""}</span>
+      <input type="checkbox" data-svcbox="${id}" ${hasSvc(id)?"checked":""} style="width:22px;height:22px"></label>`).join("")}
+    <div class="row" style="margin-top:10px"><button class="btn sm" data-svcall="1">Välj alla</button><button class="btn sm" data-svcall="0">Avmarkera alla</button></div>
+    <div class="hint">Avmarkerade tjänster döljs med "Visa bara mina tjänster" och ger färre tips.</div></div>
+
+  <h2>Favoritgenrer</h2>
+  ${Object.entries(CATS).filter(([k])=>k!=="film").map(([k,c]) => `<h4>${k==="drama"?"Serier & filmer":c.name}</h4><div>${c.subs.filter(s=>s!=="Omtalade").map(g=>`<button class="tag ${state.favGenres.includes(g)?"on":""}" data-genre="${esc(g)}">${esc(g)}</button>`).join("")}</div>`).join("")}
+
+  <h2>Gillar <small>${state.liked.length}</small></h2>${list(state.liked, "Inget gillat ännu.")}
+  <h2>Har sett <small>${state.watched.length}</small></h2>${list(state.watched, "Ingen historik ännu.")}
+  <h2>Gillar inte <small>${state.disliked.length}</small></h2>${list(state.disliked, "Inget här.")}`;
+}
+
+function viewSettings(){
+  const S = state.settings;
+  return `<h2>Visning</h2><div class="card">
+    <label class="f" style="margin-top:0">Textstorlek i appen <span class="kbd">Ctrl/⌘ +</span><span class="kbd">Ctrl/⌘ −</span></label>
+    <div class="seg sm">${TEXTSCALES.map(([v,n])=>`<button data-scale="${v}" class="${(S.textScale||1)==v?"on":""}">${n}</button>`).join("")}</div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="showKeys">⌨ Visa kortkommandon</button></div>
+  </div>
+  <h2>Sök</h2><div class="card">
+    <label class="toggle" style="margin-top:0"><input type="checkbox" id="eroticSet" ${state.search.erotic?"checked":""} ${(+state.profile.age && +state.profile.age<18)?"disabled":""}> Visa och sök erotiskt innehåll (18+)</label>
+    <label class="f">YouTube API-nyckel (valfritt – ger träffar direkt i appen, annars öppnas YouTube)</label>
+    <input type="password" id="ytKey" value="${esc(S.ytKey)}" autocomplete="off" placeholder="Från console.cloud.google.com">
+  </div>
+  <h2>Data från GitHub</h2><div class="card">
+    <div class="hint" style="margin-top:0">Programutbudet hämtas från en JSON-fil som uppdateras varje natt av en GitHub Action. Ligger appen på samma GitHub Pages-sida räcker standardvärdet.</div>
+    <label class="f">Adress till katalogen</label>
+    <input type="text" id="dataUrl" value="${esc(S.dataUrl)}" placeholder="https://användare.github.io/repo/data/katalog.json">
+    <div class="row" style="margin-top:10px"><button class="btn pri" id="reload">Hämta nu</button></div>
+    <div class="hint">Status: ${esc(dataStatus)}${CATALOG.updated?` · ${programs().length} program`:""}</div>
+  </div>
+  <h2>Favoriter till GitHub</h2><div class="card">
+    <div class="hint" style="margin-top:0">Om GitHub-uppdateringen ska hämta liknande program och verk av dina regissörer och skådespelare, kopiera listan och klistra in den i <b>config/favoriter.json</b> i repot.</div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="favCopy">Kopiera favoritlista</button><button class="btn" id="favShow">Visa</button></div>
+    <textarea id="favTa" style="display:none;margin-top:8px" readonly></textarea>
+  </div>
+  <h2>AI</h2><div class="card">
+    <label class="f" style="margin-top:0">Leverantör</label>
+    <select id="aiProvider"><option value="anthropic" ${S.aiProvider==="anthropic"?"selected":""}>Anthropic (Claude)</option><option value="openai" ${S.aiProvider==="openai"?"selected":""}>OpenAI-kompatibel</option></select>
+    <label class="f">API-nyckel</label><input type="password" id="aiKey" value="${esc(S.aiKey)}" autocomplete="off">
+    <label class="f">Modell</label><input type="text" id="aiModel" value="${esc(S.aiModel)}">
+    <label class="f">Bas-URL (endast OpenAI-kompatibel)</label><input type="text" id="aiBase" value="${esc(S.aiBase)}">
+    <div class="hint">Nyckeln sparas bara i den här enheten och skickas bara till den valda AI-tjänsten.</div>
+  </div>
+  <h2>Påminnelser</h2><div class="card"><label class="toggle" style="margin-top:0"><input type="checkbox" id="notify" ${S.notify?"checked":""}> Notis när något jag följer försvinner inom en vecka</label></div>
+  <h2>Säkerhetskopia av mina val</h2><div class="card">
+    <div class="row"><button class="btn" id="exp">Visa export</button><button class="btn" id="copyexp">Kopiera</button></div>
+    <textarea id="expta" style="margin-top:8px;display:none" readonly></textarea>
+    <label class="f">Importera (klistra in eller välj fil)</label>
+    <textarea id="impta" placeholder="{ … }"></textarea>
+    <div class="row" style="margin-top:8px"><input type="file" id="impf" accept="application/json"><button class="btn" id="imp" style="flex:none">Importera</button></div>
+  </div>
+  <h2>Återställ</h2><div class="card"><button class="btn" id="reset">Återställ mina val</button> <span id="resetq"></span></div>`;
+}
+
+/* ---------- Detaljvy ---------- */
+function personLinks(names, type){
+  return (names||[]).map(n => `<a data-favperson="${type}|${esc(n)}" title="Lägg till som favorit">${esc(n)}</a>`).join(", ");
+}
+function openDetail(id, keepNav){
+  const p = byId(id); if(!p) return;
+  if (!keepNav){ const ids = [...document.querySelectorAll("#app [data-open]")].map(e => e.dataset.open); navList = [...new Set(ids)]; }
+  $("#sheet").dataset.mode = "detail";
+  const has = arr => state[arr].includes(id);
+  const isFav = state.favorites.some(f => f.type === "titel" && findTitle(f.name)?.id === id);
+  const now = Date.now(), lv = leaving(p, 7);
+  const eps = (p.episodes||[]).filter(e => new Date(e.airs) > now - 3*3600e3).sort((a,b)=>new Date(a.airs)-new Date(b.airs)).slice(0, 8);
+  const simList = programs().filter(q => q.id !== id && !state.disliked.includes(q.id)).map(q => ({q, s:sim(p,q)})).filter(x=>x.s>=5).sort((a,b)=>b.s-a.s).slice(0,8).map(x=>x.q);
+  const avs = (p.availability||[]).slice().sort((a,b)=>new Date(a.from)-new Date(b.from));
+  $("#sheetc").innerHTML = `
+    <div style="display:flex;gap:14px;align-items:flex-start">${poster(p)}<div>
+      <h3>${esc(p.title)}</h3><div style="color:var(--mut);font-size:14px">${esc(CATS[category(p)].name)} · ${esc(meta(p))}</div>
+      <div style="margin-top:4px">${ratingChips(p, false) || `<a class="rt" href="${imdbUrl(p)}" target="_blank" rel="noopener">Sök på IMDb</a>`}</div></div></div>
+    ${lv.map(l => `<div class="card warn" style="margin-top:12px"><div class="lbl">Sista dag ${fmtD(l.until,{weekday:"long",day:"numeric",month:"long"})}</div>
+      <div>Försvinner från ${esc(svc(l.service).name)}.${l.movesTo?` Finns sedan på <b>${esc(svc(l.movesTo.service).name)}</b> från ${fmtD(l.movesTo.from)}.`:""}</div></div>`).join("")}
+    <p style="line-height:1.5">${esc(p.desc||"")}</p>
+    ${p.directors?.length || p.cast?.length ? `<div class="people" style="font-size:14px;line-height:1.6;color:var(--mut)">
+      ${p.directors?.length ? `<div>${p.type==="film"?"Regi":"Skapad av"}: ${personLinks(p.directors,"regissor")}</div>` : ""}
+      ${p.cast?.length ? `<div>Medverkande: ${personLinks(p.cast,"skadespelare")}</div>` : ""}
+      <div class="hint">Tryck på ett namn för att lägga till som favorit.</div></div>` : ""}
+    <div class="acts">
+      <button class="btn ${isFav?"on":""}" data-act="fav">♥ Favorit</button>
+      <button class="btn ${has("liked")?"on":""}" data-act="liked">👍 Gillar</button>
+      <button class="btn ${has("disliked")?"on":""}" data-act="disliked">👎 Inte för mig</button>
+      <button class="btn ${has("watched")?"on":""}" data-act="watched">✓ Har sett</button>
+      <button class="btn" data-act="ai">✨ Fråga AI</button>
+    </div>
+    <h2 style="margin-top:6px">Var finns den</h2>
+    ${avs.map(a => {
+      const live = new Date(a.from) <= now && (!a.until || new Date(a.until) > now);
+      const st = live ? "Finns nu" : new Date(a.from) > now ? `Från ${fmtD(a.from)}` : `Fanns t.o.m. ${fmtD(a.until)}`;
+      return `<div class="avail"><div>${chip(a.service)} <span style="color:var(--mut)">${st}${live && a.until ? ` · sista dag ${fmtD(a.until)}`:""}</span></div>
+        ${category(p)!=="sport"?`<input type="date" data-until="${esc(a.service)}" value="${a.until?new Date(a.until).toISOString().slice(0,10):""}" aria-label="Sista dag" style="width:150px">`:""}</div>`;
+    }).join("") || `<div class="hint">Ingen tjänst känd.</div>`}
+    ${category(p)!=="sport"?`<div class="hint">Datumfältet är sista dag i tjänsten. Fyll i själv om källan saknar det.</div>`:""}
+    ${eps.length?`<h2>${category(p)==="sport"?"Sändningar":"Kommande avsnitt"}</h2>${eps.map(e=>`<div class="avail"><div><b>${esc(epLabel(e))}</b></div><div style="text-align:right">${fmtD(e.airs)} ${e.timeKnown===false?"":fmtT(e.airs)} ${e.service?chip(e.service):""}</div></div>`).join("")}`:""}
+    ${simList.length?`<h2>Liknande</h2><div class="hscroll">${simList.map(q=>mini(q, miniWhere(q))).join("")}</div>`:""}
+    <div class="ai-out" id="dai" style="margin-top:12px"></div>
+    ${p.source?`<div class="demo">Källa: ${esc(p.source)}</div>`:""}`;
+  $("#sheet").dataset.id = id; $("#sheet").scrollTop = 0;
+  $("#sheetc").querySelectorAll("[data-open]").forEach(el => { el.tabIndex = 0; });
+  $("#sheetbg").style.display = "block"; requestAnimationFrame(()=>$("#sheet").classList.add("open"));
+}
+function closeDetail(){ $("#sheet").classList.remove("open"); $("#sheetbg").style.display = "none"; }
+$("#sheetbg").onclick = closeDetail; $("#sheetx").onclick = closeDetail;
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
+$("#sheet").addEventListener("click", async ev => {
+  if ($("#sheet").dataset.mode === "export") return;
+  const id = $("#sheet").dataset.id;
+  if (ev.target.closest("a.rt")) return;
+  const op = ev.target.closest("[data-open]"); if (op){ openDetail(op.dataset.open); return; }
+  const fp = ev.target.closest("[data-favperson]");
+  if (fp){ const [type, name] = fp.dataset.favperson.split("|"); addFavorite(type, name); return; }
+  const b = ev.target.closest("[data-act]"); if(!b) return;
+  const act = b.dataset.act, p = byId(id);
+  if (act === "ai"){ const out = $("#dai"); out.textContent = "Tänker…"; try { out.innerHTML = linkify(await askAI(`Berätta kort om "${p.title}" och om det passar mig. Föreslå 2–3 liknande program, gärna ur katalogen.`)); } catch(e){ out.textContent = e.message; } return; }
+  if (act === "fav"){ toggleMark(id); openDetail(id); render(); return; }
+  const opp = {liked:"disliked", disliked:"liked"}[act];
+  if (state[act].includes(id)) state[act] = state[act].filter(x=>x!==id);
+  else { state[act].push(id); if (opp) state[opp] = state[opp].filter(x=>x!==id); }
+  save(); openDetail(id); render();
+});
+$("#sheet").addEventListener("change", ev => {
+  if ($("#sheet").dataset.mode === "export") return;
+  const s = ev.target.dataset.until; if (s === undefined) return;
+  const p = byId($("#sheet").dataset.id), a = p.availability.find(x => x.service === s);
+  const v = ev.target.value ? new Date(ev.target.value + "T23:59:00").toISOString() : "";
+  a.until = v || undefined;
+  state.overrides[p.id] = Object.assign(state.overrides[p.id]||{}, {[s]: v});
+  save(); openDetail(p.id); render(); toast("Sista dag sparad");
+});
+function addFavorite(type, name){
+  name = String(name||"").trim(); if (!name) return;
+  if (state.favorites.some(f => f.type === type && low(f.name) === low(name))){ toast(`${name} finns redan bland favoriterna`); return; }
+  state.favorites.push({type, name}); save(); render();
+  const n = favoriteHits({type, name}).list.length;
+  toast(`${name} tillagd · ${n ? n + " liknande i katalogen" : "inget liknande i katalogen än"}`);
+}
+
+/* ---------- AI ---------- */
+function aiContext(){
+  const t = Date.now();
+  const cat = programs().slice(0, 400).map(p => {
+    const cur = currentAvail(p), fut = futureAvail(p)[0];
+    const where = cur.map(a => svc(a.service).name + (a.until ? ` (t.o.m. ${fmtD(a.until)})` : "")).join(", ") || (fut ? `kommer på ${svc(fut.service).name} ${fmtD(fut.from)}` : "ej tillgänglig");
+    const ne = nextEpisode(p);
+    const ppl = people(p).slice(0,3).join(", ");
+    return `- ${p.title} (${CATS[category(p)].name}; ${(p.genres||[]).join(", ")}${ppl?"; "+ppl:""}) – ${where}${ne ? `; nästa ${fmtD(ne.airs)} ${ne.timeKnown===false?"":fmtT(ne.airs)}` : ""}`;
+  }).join("\n");
+  const names = ids => ids.map(byId).filter(Boolean).map(p=>p.title).join(", ") || "inga";
+  const P = state.profile;
+  const favs = Object.entries(FAVTYPES).map(([k,v]) => { const l = state.favorites.filter(f=>f.type===k).map(f=>f.name); return l.length ? `${v}: ${l.join(", ")}` : ""; }).filter(Boolean).join(". ");
+  return `Du är en personlig tv-guide för en svensk tittare. Svara kort och konkret på svenska. Idag: ${fmtD(t,{weekday:"long",day:"numeric",month:"long",year:"numeric"})}.
+Profil: ${[P.age?`${P.age} år`:"", P.gender && P.gender!=="Vill inte ange" ? P.gender : "", (P.interests||[]).length ? "intressen: "+P.interests.join(", ") : ""].filter(Boolean).join(", ") || "ej angiven"}.
+Favoriter: ${favs || "inga"}.
+Gillar: ${names(state.liked)}. Har sett: ${names(state.watched)}. Gillar inte: ${names(state.disliked)}.
+Favoritgenrer: ${state.favGenres.join(", ") || "inga"}. Tittarens tjänster: ${Object.keys(SERVICES).filter(k=>!SERVICES[k].hidden && hasSvc(k)).map(s=>svc(s).name).join(", ")}.
+${filterLabel() ? "Tittaren tittar just nu på urvalet: " + filterLabel() + ".\n" : ""}Katalog (titel (kategori; genrer; personer) – var den finns):
+${cat}
+När du nämner ett program ur katalogen, skriv titeln som [[Titel]] exakt som i katalogen. Du får föreslå program utanför katalogen, men säg då att appen inte vet var de finns just nu.`;
+}
+async function askAI(q){
+  const S = state.settings;
+  if (!S.aiKey) throw new Error("Lägg in en AI-nyckel under Inställningar först.");
+  try {
+    if (S.aiProvider === "anthropic"){
+      const r = await fetch("https://api.anthropic.com/v1/messages", {method:"POST", headers:{"content-type":"application/json","x-api-key":S.aiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+        body: JSON.stringify({model:S.aiModel, max_tokens:900, system:aiContext(), messages:[{role:"user", content:q}]})});
+      const j = await r.json(); if (!r.ok) throw new Error(j.error?.message || r.status);
+      return j.content.map(c=>c.text||"").join("");
+    } else {
+      const r = await fetch(S.aiBase.replace(/\/$/,"") + "/chat/completions", {method:"POST", headers:{"content-type":"application/json","authorization":"Bearer "+S.aiKey},
+        body: JSON.stringify({model:S.aiModel, messages:[{role:"system",content:aiContext()},{role:"user",content:q}]})});
+      const j = await r.json(); if (!r.ok) throw new Error(j.error?.message || r.status);
+      return j.choices[0].message.content;
+    }
+  } catch(e){
+    if (e instanceof TypeError) throw new Error("Kunde inte nå AI-tjänsten. Kontrollera nätet. (I Claudes förhandsvisning blockeras externa anrop.)");
+    throw new Error("AI-fel: " + e.message);
+  }
+}
+function linkify(txt){
+  return esc(txt).replace(/\[\[(.+?)\]\]/g, (m, t) => {
+    const p = findTitle(t.replace(/&amp;/g,"&").replace(/&#39;/g,"'"));
+    return p ? `<a data-open="${p.id}">${t}</a>` : `<b>${t}</b>`;
+  });
+}
+async function runAI(q){
+  const out = $("#aiout"), btn = $("#aiask"); if (!out) return;
+  $("#aiq").value = q; btn.disabled = true; out.textContent = "Tänker…";
+  out.scrollIntoView({behavior:"smooth", block:"center"});
+  try { out.innerHTML = linkify(await askAI(q)); } catch(e){ out.textContent = e.message; }
+  btn.disabled = false;
+}
+
+/* ---------- Påminnelser ---------- */
+function checkNotify(){
+  const S = state.settings; if (!S.notify || !("Notification" in window) || Notification.permission !== "granted") return;
+  const today = new Date().toISOString().slice(0,10); if (S.lastNotified === today) return;
+  const items = programs().filter(follows).flatMap(p => leaving(p).map(l => `${p.title} – sista dag ${fmtD(l.until)}${l.movesTo?`, sedan på ${svc(l.movesTo.service).name}`:""}`));
+  if (!items.length) return;
+  try { new Notification("Lämnar snart", {body: items.join("\n")}); S.lastNotified = today; save(); } catch(e){}
+}
+
+/* ---------- Rendering & händelser ---------- */
+const ROUTES = {tips:viewTips, tabla:viewTabla, sok:viewSearch, mina:viewMina, installningar:viewSettings};
+function route(){ const r = location.hash.slice(1); return ROUTES[r] ? r : "tips"; }
+function render(){
+  const r = route();
+  $("#app").innerHTML = ROUTES[r]();
+  document.querySelectorAll("#app [data-open]").forEach(el => { el.tabIndex = 0; el.setAttribute("role","button"); });
+  document.documentElement.style.setProperty("--z", state.settings.textScale || 1);
+  document.querySelectorAll("nav.bottom a").forEach(a => a.classList.toggle("on", a.dataset.r === r));
+  const n = programs().filter(follows).flatMap(p => leaving(p)).length;
+  $("#sub").textContent = fmtD(new Date(), {weekday:"long", day:"numeric", month:"long"}) + (n ? ` · ${n} lämnar snart` : "") + ` · ${dataStatus}`;
+}
+window.addEventListener("hashchange", () => { render(); window.scrollTo(0,0); });
+function favExport(){
+  return JSON.stringify({titlar: state.favorites.filter(f=>f.type==="titel").map(f=>f.name),
+    regissorer: state.favorites.filter(f=>f.type==="regissor").map(f=>f.name),
+    skadespelare: state.favorites.filter(f=>f.type==="skadespelare").map(f=>f.name)}, null, 2);
+}
+const userExport = () => JSON.stringify({...state, settings:{...state.settings, aiKey:""}}, null, 1);
+
+document.addEventListener("click", async ev => {
+  const t = ev.target;
+  if (t.closest("#sheet")) return;
+  const hb = t.closest("[data-heart]"); if (hb){ ev.stopPropagation(); toggleMark(hb.dataset.heart); render(); return; }
+  if (t.closest("a.rt")) return;
+  const o = t.closest("[data-open]"); if (o){ openDetail(o.dataset.open); return; }
+  const c = t.closest("[data-cat]"); if (c){ state.cat = c.dataset.cat; save(); render(); return; }
+  const sb = t.closest("[data-sub]");
+  if (sb){ const k = state.cat, v = sb.dataset.sub, cur = state.subs[k] || []; state.subs[k] = cur.includes(v) ? cur.filter(x=>x!==v) : [...cur, v]; save(); render(); return; }
+  if (t.closest("[data-subclear]")){ state.subs[state.cat] = []; save(); render(); return; }
+  const v = t.closest("[data-view]"); if (v){ state.view = v.dataset.view; save(); render(); return; }
+  const st = t.closest("[data-step]");
+  if (st){
+    const k = +st.dataset.step, a = new Date(state.anchor);
+    if (k === 0) state.anchor = new Date().toISOString();
+    else { if (state.view==="dag") a.setDate(a.getDate()+k); else if (state.view==="vecka") a.setDate(a.getDate()+7*k); else { a.setDate(1); a.setMonth(a.getMonth()+k); } state.anchor = a.toISOString(); }
+    save(); render(); return;
+  }
+  const sa = t.closest("[data-svcall]"); if (sa){ state.myServices = sa.dataset.svcall === "1" ? Object.keys(SERVICES).filter(k=>!SERVICES[k].hidden) : []; state.excluded = []; save(); render(); return; }
+  const sv = t.closest("[data-svc]"); if (sv){ const id = sv.dataset.svc; state.myServices = state.myServices.includes(id) ? state.myServices.filter(x=>x!==id) : [...state.myServices, id]; save(); render(); return; }
+  const g = t.closest("[data-genre]"); if (g){ const id = g.dataset.genre; state.favGenres = state.favGenres.includes(id) ? state.favGenres.filter(x=>x!==id) : [...state.favGenres, id]; save(); render(); return; }
+  const di = t.closest("[data-delint]"); if (di){ state.profile.interests.splice(+di.dataset.delint, 1); save(); render(); return; }
+  const ai = t.closest("[data-int]"); if (ai){ state.profile.interests.push(ai.dataset.int); save(); render(); return; }
+  if (t.id === "intAdd"){ const v = $("#intIn").value.trim(); if (v && !state.profile.interests.includes(v)){ state.profile.interests.push(v); save(); render(); } return; }
+  const df = t.closest("[data-delfav]"); if (df){ state.favorites.splice(+df.dataset.delfav, 1); save(); render(); return; }
+  if (t.id === "favAdd"){ addFavorite($("#favType").value, $("#favName").value); return; }
+  const af = t.closest("[data-aifav]");
+  if (af){ const [type, name] = af.dataset.aifav.split("|");
+    runAI(type === "titel" ? `Tipsa om serier och filmer som liknar ${name}.` : type === "regissor" ? `Vilka verk av regissören ${name} bör jag se, och vad liknar dem?` : `Vilka filmer och serier med ${name} bör jag se?`); return; }
+  const q = t.closest("[data-q]"); if (q){ runAI(q.dataset.q); return; }
+  if (t.id === "aiask"){ const qq = $("#aiq").value.trim(); if (qq) runAI(qq); return; }
+  if (t.id === "reload"){ t.disabled = true; t.textContent = "Hämtar…"; await loadData(true); return; }
+  if (t.id === "favCopy"){ try { await navigator.clipboard.writeText(favExport()); toast("Favoritlistan kopierad"); } catch(e){ const ta = $("#favTa"); ta.style.display="block"; ta.value = favExport(); toast("Markera och kopiera texten"); } return; }
+  if (t.id === "favShow"){ const ta = $("#favTa"); ta.style.display = "block"; ta.value = favExport(); return; }
+  if (t.id === "exp"){ const ta = $("#expta"); ta.style.display = "block"; ta.value = userExport(); return; }
+  if (t.id === "copyexp"){ try { await navigator.clipboard.writeText(userExport()); toast("Kopierat (utan AI-nyckel)"); } catch(e){ toast("Kunde inte kopiera – använd Visa export"); } return; }
+  if (t.id === "imp"){
+    try { const f = $("#impf").files[0]; const d = JSON.parse(f ? await f.text() : $("#impta").value);
+      const keep = state.settings.aiKey; state = Object.assign(defaults(), d); state.settings = Object.assign(defaults().settings, d.settings, {aiKey:keep});
+      state.profile = Object.assign(defaults().profile, d.profile); save(); render(); toast("Importerat"); } catch(e){ toast("Kunde inte läsa filen"); }
+    return;
+  }
+  if (t.id === "reset"){ $("#resetq").innerHTML = ` Säker? <button class="btn sm" id="resetyes">Ja, återställ</button>`; return; }
+  if (t.id === "resetyes"){ const keep = state.settings; state = defaults(); state.settings = keep; save(); render(); toast("Återställt"); return; }
+});
+document.addEventListener("keydown", ev => {
+  if (ev.key !== "Enter") return;
+  if (ev.target.id === "favName"){ addFavorite($("#favType").value, ev.target.value); }
+  if (ev.target.id === "intIn"){ $("#intAdd").click(); }
+});
+document.addEventListener("change", async ev => {
+  const t = ev.target;
+  if (t.closest("#sheet")) return;
+  if (t.id === "onlymine"){ state.onlyMine = t.checked; save(); render(); return; }
+  if (t.dataset.svcbox){
+    const id = t.dataset.svcbox, par = (SERVICES[id]||{}).parent;
+    state.excluded = state.excluded || [];
+    if (t.checked){ if (!state.myServices.includes(id)) state.myServices.push(id); state.excluded = state.excluded.filter(x=>x!==id); }
+    else { state.myServices = state.myServices.filter(x=>x!==id); if (par) state.excluded.push(id); }
+    save(); render(); return;
+  }
+  if (t.id === "pAge"){ state.profile.age = t.value; save(); return; }
+  if (t.id === "pGender"){ state.profile.gender = t.value; save(); return; }
+  if (["dataUrl","aiProvider","aiKey","aiModel","aiBase"].includes(t.id)){
+    state.settings[t.id] = t.value.trim();
+    if (t.id === "aiProvider") state.settings.aiModel = t.value === "anthropic" ? "claude-sonnet-5-5" : "gpt-4o-mini";
+    save(); if (t.id === "aiProvider") render(); toast("Sparat");
+    if (t.id === "dataUrl") loadData(true);
+    return;
+  }
+  if (t.id === "notify"){
+    state.settings.notify = t.checked; save();
+    if (t.checked){ try { const p = await Notification.requestPermission(); if (p !== "granted") toast("Notiser tillåts inte här – varningar visas i appen"); else checkNotify(); } catch(e){ toast("Notiser stöds inte här – varningar visas i appen"); } }
+  }
+});
+
+/* =====================================================================
+   SÖK – optimerat för att hitta passande program
+   ===================================================================== */
+const SYN = {
+  "läskig":["Skräck"],"läskiga":["Skräck"],"skräck":["Skräck"],"rysare":["Skräck","Thriller"],"skrämmande":["Skräck"],
+  "spänning":["Thriller","Kriminal"],"spännande":["Thriller","Kriminal"],"thriller":["Thriller"],"deckare":["Kriminal"],"krim":["Kriminal"],"kriminal":["Kriminal"],"mord":["Kriminal"],"polis":["Kriminal"],
+  "rolig":["Komedi"],"roliga":["Komedi"],"kul":["Komedi"],"humor":["Komedi"],"komedi":["Komedi"],"lättsam":["Komedi","Familj"],"mysig":["Komedi","Familj","Romantik"],
+  "romantisk":["Romantik"],"romantik":["Romantik"],"kärlek":["Romantik"],"feelgood":["Komedi","Romantik"],
+  "framtid":["Sci-fi"],"rymden":["Sci-fi"],"sf":["Sci-fi"],"scifi":["Sci-fi"],"sci-fi":["Sci-fi"],"fantasy":["Fantasy"],"magi":["Fantasy"],
+  "historisk":["Historiskt"],"historia":["Historiskt"],"historiska":["Historiskt"],"krig":["Krig"],"politik":["Politik"],"politisk":["Politik"],
+  "action":["Action"],"äventyr":["Äventyr"],"drama":["Drama"],"familj":["Familj"],"barn":["Familj","Animerat"],"tecknat":["Animerat"],"animerat":["Animerat"],
+  "nyheter":["Nyheter"],"aktuellt":["Aktuellt"],"magasin":["Magasin"],"granskning":["Politik","Aktuellt","Omtalad"],"omtalad":["Omtalad"],"omtalade":["Omtalad"],
+  "mat":["Mat"],"matlagning":["Mat"],"matprogram":["Mat"],"kock":["Mat"],"resa":["Resor"],"resor":["Resor"],"resande":["Resor"],"frågesport":["Frågesport"],"reality":["Reality"],
+  "sport":["Sport","Fotboll","Ishockey"],"fotboll":["Fotboll"],"hockey":["Ishockey"],"ishockey":["Ishockey"],"skidor":["Längdskidor","Alpint"],"alpint":["Alpint"],
+  "dokumentär":["Dokumentär"],"dokumentärer":["Dokumentär"],"dok":["Dokumentär"],"truecrime":["Kriminal","Dokumentär"],
+  "erotik":["Erotik"],"erotisk":["Erotik"],"erotiska":["Erotik"],"sexig":["Erotik"],"sex":["Erotik"],"sensuell":["Erotik"],"het":["Erotik"]
+};
+const TYPEWORDS = {film:"film", filmer:"film", serie:"serie", serier:"serie", tvserie:"serie"};
+const STOP = new Set("en ett och att som med för på i av till om det den de vill jag något nåt någon lite mer med typ bra gärna se kolla tips snart just nu".split(" "));
+const norm = s => low(s).replace(/true crime/g,"truecrime").replace(/tv-serie/g,"tvserie");
+function lev1(a, b){ // max ett fel (byte/infogning/borttag)
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, e = 0;
+  while (i < a.length && j < b.length){ if (a[i] === b[j]){ i++; j++; continue; } if (++e > 1) return false; if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; } }
+  return e + (a.length - i) + (b.length - j) <= 1;
+}
+function parseQuery(q){
+  const raw = norm(q), words = raw.split(/[^a-z0-9åäöéü\-]+/).filter(Boolean);
+  const genres = new Set(), svcs = new Set(), tokens = []; let type = null, tonight = false, isNew = false, leavingQ = false, wantsErotic = false;
+  for (const w of words){
+    if (SYN[w]){ SYN[w].forEach(g => genres.add(g)); if (SYN[w].includes("Erotik")) wantsErotic = true; continue; }
+    if (TYPEWORDS[w]){ type = TYPEWORDS[w]; continue; }
+    if (["ikväll","kväll","idag"].includes(w)){ tonight = true; continue; }
+    if (["ny","nya","nytt","premiär"].includes(w)){ isNew = true; continue; }
+    if (["lämnar","försvinner","borta"].includes(w)){ leavingQ = true; continue; }
+    const sv = Object.entries(SERVICES).find(([k,v]) => low(v.name).replace(/\s|\+/g,"") === w.replace(/\+/g,"") || k === w);
+    if (sv){ svcs.add(sv[0]); continue; }
+    if (!STOP.has(w)) tokens.push(w);
+  }
+  return {raw, tokens, genres:[...genres], svcs:[...svcs], type, tonight, isNew, leavingQ, wantsErotic};
+}
+function searchCatalog(q){
+  const Q = parseQuery(q); if (!Q.raw.trim()) return {Q, hits:[]};
+  const w = genreWeights(), now = Date.now();
+  const hits = [];
+  for (const p of programs()){
+    if (state.disliked.includes(p.id)) continue;
+    if (isErotic(p) && !eroticOk()) continue;
+    const title = norm(p.title), ppl = people(p).map(norm), gl = (p.genres||[]).map(low), desc = norm(p.desc);
+    let lex = 0, why = [];
+    if (Q.raw.length > 2 && title.includes(Q.raw.trim())){ lex += 60; why.push("titel"); }
+    for (const t of Q.tokens){
+      const tw = title.split(/[^a-z0-9åäöéü]+/);
+      if (tw.includes(t)) lex += 18; else if (t.length > 2 && title.includes(t)) lex += 12; else if (t.length >= 5 && tw.some(x => lev1(x, t))) { lex += 8; why.push("liknande stavning"); }
+      const pm = ppl.find(x => x.split(" ").includes(t) || (t.length > 4 && x.includes(t)));
+      if (pm){ lex += 22; why.push(people(p)[ppl.indexOf(pm)]); }
+      if (gl.includes(t)) lex += 10;
+      if (t.length > 3 && desc.includes(t)) lex += 3;
+    }
+    const gm = Q.genres.filter(g => gl.includes(low(g)) || (g === "Omtalad" && (p.trend||0) >= 70) || (g === "Sport" && category(p) === "sport"));
+    if (Q.genres.length){ if (!gm.length) continue; lex += 10 * gm.length; why.push(gm.join(", ")); }
+    if (Q.type && p.type !== Q.type) continue;
+    if (Q.svcs.length && !(p.availability||[]).some(a => Q.svcs.includes(a.service) && (!a.until || new Date(a.until) > now))) continue;
+    if (Q.tonight){ const ep = nextEpisode(p); if (!ep || sod(ep.airs).getTime() !== sod(new Date()).getTime()) continue; lex += 10; why.push("ikväll " + fmtT(ep.airs)); }
+    if (Q.isNew && !(p.availability||[]).some(a => now - new Date(a.from) < 21*DAY && new Date(a.from) - now < 30*DAY) && !nextEpisode(p)) continue;
+    if (Q.leavingQ && !leaving(p, 14).length) continue;
+    const onlyFilters = !Q.tokens.length && (Q.genres.length || Q.type || Q.svcs.length || Q.tonight || Q.isNew || Q.leavingQ);
+    if (!lex && !onlyFilters) continue;
+    // personlig och kvalitativ viktning
+    let pers = (p.genres||[]).reduce((s,g)=>s+(w[g]||0),0) * 0.6 + ((p.ratings||{}).imdb || (p.ratings||{}).tmdb || 6) * 1.2 + (p.trend||0)/25;
+    if ((p.availability||[]).some(a => hasSvc(a.service) && (!a.until || new Date(a.until) > now))) pers += 4;
+    if (!currentAvail(p).length && !futureAvail(p).length && !nextEpisode(p)) pers -= 8;
+    hits.push({p, score: lex * 2 + pers, why:[...new Set(why)].slice(0,2).join(" · ")});
+  }
+  hits.sort((a,b)=>b.score-a.score);
+  return {Q, hits};
+}
+let searchQ = "", searchExt = "";
+function viewSearch(){
+  const S = state.search, srcs = [["youtube","YouTube"],["dailymotion","Dailymotion"],["vimeo","Vimeo"],["justwatch","JustWatch"]];
+  let h = `<div class="searchbox"><input type="text" id="sq" value="${esc(searchQ)}" placeholder="t.ex. spännande svensk deckare, rolig film på Netflix, hockey ikväll" enterkeyhint="search" autocomplete="off"><button class="btn pri" id="sgo" style="flex:none">Sök</button></div>
+  <div class="hint">Skriv fritt: titel, skådespelare, regissör, genre, stämning ("läskig", "mysig"), tjänst ("på Netflix"), "ikväll", "nya", "lämnar snart". Tryck <span class="kbd">/</span> eller <span class="kbd">Ctrl/⌘ K</span> för att söka var som helst.</div>
+  <h4>Sök även i</h4><div>${srcs.map(([k,n])=>`<button class="tag ${S[k]?"on":""}" data-src="${k}">${n}</button>`).join("")}
+  <button class="tag ${S.erotic?"on":""}" data-src="erotic" ${(+state.profile.age && +state.profile.age<18)?"disabled":""}>Erotiskt innehåll 18+</button></div>`;
+  if (!searchQ.trim()){
+    const pop = trending(p => !isErotic(p) || eroticOk()).slice(0, 10);
+    return h + `<h2>Populära sökningar</h2><div>${["spännande deckare","rolig film","dokumentär krig","fotboll","matprogram","nya serier","lämnar snart","ikväll"].map(x=>`<button class="tag" data-sq="${x}">${x}</button>`).join("")}</div>
+      <h2>Trendar just nu</h2>${pop.map((p,i)=>progRow(p,"",i+1)).join("")}`;
+  }
+  const {Q, hits} = searchCatalog(searchQ);
+  if (Q.wantsErotic && !eroticOk()) h += `<div class="card" style="margin-top:12px">Erotiskt innehåll är avstängt. ${(+state.profile.age && +state.profile.age<18) ? "Det kan inte slås på för profiler under 18 år." : `<button class="btn sm" data-src="erotic">Slå på (18+)</button>`}</div>`;
+  const tags = [...Q.genres, Q.type, ...Q.svcs.map(x=>svc(x).name), Q.tonight?"ikväll":"", Q.isNew?"nytt":"", Q.leavingQ?"lämnar snart":""].filter(Boolean);
+  h += `<h2>I katalogen <small>${hits.length} träffar${tags.length ? " · tolkat som: " + esc(tags.join(", ")) : ""}</small></h2>`;
+  h += hits.length ? hits.slice(0, 40).map(x => progRow(x.p, x.why ? `<div class="reason">${esc(x.why)}</div>` : "")).join("") : `<div class="empty">Inga träffar i katalogen. Prova AI-sök nedan eller andra ord.</div>`;
+  h += `<div class="row" style="margin-top:6px"><button class="btn" id="aisearch">✨ AI-sök: "${esc(searchQ.slice(0,40))}"</button></div><div class="ai-out" id="aiout" style="margin-top:12px"></div><textarea id="aiq" style="display:none"></textarea><button id="aiask" style="display:none"></button>`;
+  const any = srcs.some(([k]) => S[k]);
+  if (any) h += `<h2>Utanför katalogen</h2><div id="extres">${searchExt || '<div class="hint">Söker…</div>'}</div>`;
+  return h;
+}
+async function runExternal(q){
+  const S = state.search, enc = encodeURIComponent(q); let h = "";
+  const link = (href, name, sub) => `<a class="ext" href="${href}" target="_blank" rel="noopener"><div class="poster" style="width:44px;height:44px;font-size:14px;background:var(--bg2);color:var(--txt)">↗</div><div><b>${name}</b><div class="m">${sub}</div></div></a>`;
+  if (S.youtube){
+    if (state.settings.ytKey){
+      try {
+        const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&regionCode=SE&relevanceLanguage=sv&safeSearch=${eroticOk()?"none":"moderate"}&q=${enc}&key=${encodeURIComponent(state.settings.ytKey)}`);
+        const j = await r.json(); if (!r.ok) throw new Error(j.error?.message || r.status);
+        h += `<h4>YouTube</h4>` + (j.items||[]).map(it => `<a class="ext" href="https://www.youtube.com/watch?v=${it.id.videoId}" target="_blank" rel="noopener"><img alt="" src="${esc(it.snippet.thumbnails?.medium?.url||"")}"><div><b>${esc(it.snippet.title)}</b><div class="m">${esc(it.snippet.channelTitle)} · ${fmtD(it.snippet.publishedAt,{day:"numeric",month:"short",year:"numeric"})}</div></div></a>`).join("");
+      } catch(e){ h += `<h4>YouTube</h4>` + link(`https://www.youtube.com/results?search_query=${enc}`, "Öppna sökningen på YouTube", "Kunde inte hämta direkt: " + esc(e.message)); }
+    } else h += `<h4>YouTube</h4>` + link(`https://www.youtube.com/results?search_query=${enc}`, "Sök på YouTube", "Lägg in en YouTube-nyckel i Inställningar för träffar direkt här");
+  }
+  if (S.dailymotion){
+    try {
+      const r = await fetch(`https://api.dailymotion.com/videos?search=${enc}&limit=8&family_filter=${eroticOk()?"false":"true"}&fields=id,title,thumbnail_240_url,owner.screenname,duration`);
+      const j = await r.json();
+      h += `<h4>Dailymotion</h4>` + ((j.list||[]).map(v => `<a class="ext" href="https://www.dailymotion.com/video/${v.id}" target="_blank" rel="noopener"><img alt="" src="${esc(v.thumbnail_240_url)}"><div><b>${esc(v.title)}</b><div class="m">${esc(v["owner.screenname"]||"")} · ${Math.round((v.duration||0)/60)} min</div></div></a>`).join("") || `<div class="hint">Inga träffar.</div>`);
+    } catch(e){ h += `<h4>Dailymotion</h4>` + link(`https://www.dailymotion.com/search/${enc}`, "Sök på Dailymotion", "Öppnas i webbläsaren"); }
+  }
+  if (S.vimeo) h += `<h4>Vimeo</h4>` + link(`https://vimeo.com/search?q=${enc}`, "Sök på Vimeo", "Öppnas i webbläsaren");
+  if (S.justwatch) h += `<h4>Alla svenska tjänster</h4>` + link(`https://www.justwatch.com/se/s%C3%B6k?q=${enc}`, "Sök på JustWatch", "Visar var titeln finns i Sverige, även hyr- och köptjänster");
+  searchExt = h; const el = $("#extres"); if (el) el.innerHTML = h;
+}
+function doSearch(q){
+  searchQ = q.trim(); searchExt = "";
+  if (location.hash !== "#sok") location.hash = "#sok"; else render();
+  if (searchQ && ["youtube","dailymotion","vimeo","justwatch"].some(k => state.search[k])) runExternal(searchQ);
+  setTimeout(() => { const i = $("#sq"); if (i && !searchQ) i.focus(); }, 30);
+}
+
+/* =====================================================================
+   EXPORT – PDF, mejl och utskrift av dag/vecka/månad
+   ===================================================================== */
+function isoWeek(d){ const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y = new Date(Date.UTC(t.getUTCFullYear(),0,1)); return Math.ceil(((t - y) / DAY + 1) / 7); }
+function periodTitle(view){
+  const keep = state.view; state.view = view; const {s, e} = range(); state.view = keep;
+  const last = new Date(e - 1);
+  if (view === "dag") return {s, e, title: fmtD(s, {weekday:"long", day:"numeric", month:"long", year:"numeric"}), file: s.toISOString().slice(0,10)};
+  if (view === "vecka") return {s, e, title: `Vecka ${isoWeek(s)} · ${fmtD(s,{day:"numeric",month:"short"})}–${fmtD(last,{day:"numeric",month:"short",year:"numeric"})}`, file: `v${isoWeek(s)}-${s.getFullYear()}`};
+  return {s, e, title: s.toLocaleDateString("sv-SE", {month:"long", year:"numeric"}), file: s.toISOString().slice(0,7)};
+}
+function infoLine(p){
+  const dir = (p.directors||[]).slice(0,2).join(", "), cast = (p.cast||[]).slice(0,3).join(", ");
+  return [ (p.genres||[]).filter(g=>low(g)!=="dokumentär").slice(0,3).join(", "), p.year, dir ? (p.type==="film"?"Regi: ":"Skapad av: ") + dir : "", cast ? "Med: " + cast : "" ].filter(Boolean).join(" · ");
+}
+function exportData(view, onlyMarked){
+  const P = periodTitle(view);
+  let ev = events(P.s, P.e);
+  if (onlyMarked) ev = ev.filter(x => isMarked(x.p));
+  const days = [];
+  for (const x of ev){
+    const k = sod(x.t).getTime(); let d = days.find(y => y.k === k);
+    if (!d){ d = {k, label: fmtD(x.t, {weekday:"long", day:"numeric", month:"long"}), items:[]}; days.push(d); }
+    d.items.push({ time: x.kind==="leave" ? "SISTA DAG" : x.kind==="new" ? "NY" : (x.timeKnown ? fmtT(x.t) : "–"),
+      title: x.p.title, service: svc(x.service).name, label: x.kind==="ep" ? x.label : x.label, info: infoLine(x.p), rating: ratingText(x.p),
+      desc: x.p.desc || "", marked: isMarked(x.p) });
+  }
+  const sub = [filterLabel(), state.onlyMine ? "mina tjänster" : "", onlyMarked ? "bara ♥-markerade" : ""].filter(Boolean).join(" · ");
+  return {...P, sub, days, count: ev.length};
+}
+function openExport(){
+  const E = state.exp, v = state.view;
+  $("#sheetc").innerHTML = `<h3>Exportera tablå</h3>
+    <label class="f">Period</label>
+    <div class="seg sm">${["dag","vecka","månad"].map(x=>`<button data-expview="${x}" class="${(E.view||v)===x?"on":""}">${x[0].toUpperCase()+x.slice(1)}</button>`).join("")}</div>
+    <div class="hint" id="expInfo"></div>
+    <label class="toggle"><input type="checkbox" id="expMarked" ${E.onlyMarked?"checked":""}> Bara program jag markerat med ♥</label>
+    <label class="toggle"><input type="checkbox" id="expDesc" ${E.desc?"checked":""}> Ta med kort beskrivning</label>
+    <label class="f">Textstorlek i PDF och utskrift</label>
+    <div class="seg sm">${[["liten","Liten"],["normal","Normal"],["stor","Stor"],["xstor","Extra stor"]].map(([k,n])=>`<button data-expsize="${k}" class="${E.size===k?"on":""}">${n}</button>`).join("")}</div>
+    <label class="f">Mejla till (valfritt)</label>
+    <input type="text" id="expTo" inputmode="email" value="${esc(E.to)}" placeholder="namn@exempel.se">
+    <div class="acts">
+      <button class="btn pri" id="expShare">📧 Maila / dela PDF</button>
+      <button class="btn" id="expDl">⬇ Ladda ned PDF</button>
+      <button class="btn" id="expPrint">🖨 Skriv ut</button>
+    </div>
+    <div class="hint">På mobilen öppnas delningsmenyn, där du väljer Mail och PDF:en bifogas automatiskt. På datorn laddas PDF:en ned och ett mejlutkast öppnas, så att du kan bifoga filen.</div>
+    <div class="hint">Det filter du valt (${esc(filterLabel() || "alla kategorier")}${state.onlyMine?", mina tjänster":""}) gäller även exporten.</div>`;
+  $("#sheet").dataset.id = ""; $("#sheet").dataset.mode = "export";
+  $("#sheetbg").style.display = "block"; requestAnimationFrame(()=>$("#sheet").classList.add("open"));
+  updateExpInfo();
+}
+function updateExpInfo(){ const E = state.exp, d = exportData(E.view || state.view, E.onlyMarked); const el = $("#expInfo"); if (el) el.textContent = `${d.title} · ${d.count} poster`; }
+const PSIZE = {liten:[8,9.5,12], normal:[9.5,11,14], stor:[11.5,13,17], xstor:[13.5,15.5,20]};
+function pdfSafe(s){ return String(s||"").normalize("NFC").replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,"-").replace(/…/g,"...").replace(/♥/g,"*")
+  .split("").map(c => c.charCodeAt(0) <= 255 ? c : c.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\x00-\xff]/g,"")).join(""); }
+let jsPDFp = null;
+function loadJsPDF(){
+  if (window.jspdf) return Promise.resolve(window.jspdf);
+  return jsPDFp = jsPDFp || new Promise((res, rej) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"; s.onload = () => res(window.jspdf); s.onerror = () => { jsPDFp = null; rej(new Error("PDF-biblioteket kunde inte laddas (kräver internet)")); }; document.head.appendChild(s); });
+}
+async function buildPdf(){
+  const E = state.exp, d = exportData(E.view || state.view, E.onlyMarked);
+  const {jsPDF} = await loadJsPDF();
+  const doc = new jsPDF({unit:"mm", format:"a4"});
+  const [fs, fsT, fsH] = PSIZE[E.size] || PSIZE.normal, M = 15, W = 210 - 2*M, lh = f => f * 0.42;
+  let y = M;
+  const need = h => { if (y + h > 297 - M - 6){ doc.addPage(); y = M; } };
+  doc.setFont("helvetica","bold"); doc.setFontSize(fsH + 4); doc.text(pdfSafe("Min Tablå"), M, y + lh(fsH+4)); y += lh(fsH+4) + 2;
+  doc.setFontSize(fsH); doc.text(pdfSafe(d.title), M, y + lh(fsH)); y += lh(fsH) + 1.5;
+  doc.setFont("helvetica","normal"); doc.setFontSize(fs); doc.setTextColor(90);
+  doc.text(pdfSafe((d.sub ? d.sub + " · " : "") + "Skapad " + fmtD(new Date(),{day:"numeric",month:"long",year:"numeric"}) + " " + fmtT(new Date())), M, y + lh(fs)); y += lh(fs) + 5; doc.setTextColor(0);
+  if (!d.days.length){ doc.setFontSize(fsT); doc.text(pdfSafe("Inga program i den här perioden och det här urvalet."), M, y + lh(fsT)); }
+  for (const day of d.days){
+    need(lh(fsH) + 12);
+    doc.setFont("helvetica","bold"); doc.setFontSize(fsH - 1); const dl = pdfSafe(day.label[0].toUpperCase() + day.label.slice(1));
+    doc.text(dl, M, y + lh(fsH-1)); y += lh(fsH-1) + 1.2; doc.setDrawColor(180); doc.line(M, y, M + W, y); y += 3;
+    for (const it of day.items){
+      doc.setFontSize(fs); const descL = E.desc && it.desc ? doc.splitTextToSize(pdfSafe(it.desc.length > 220 ? it.desc.slice(0,217) + "..." : it.desc), W - 22) : [];
+      const infoL = doc.splitTextToSize(pdfSafe([it.label, it.info].filter(Boolean).join(" · ")), W - 22);
+      need(lh(fsT) + (infoL.length + descL.length + (it.rating?1:0)) * lh(fs) + 4);
+      doc.setFont("helvetica","bold"); doc.setFontSize(fsT);
+      doc.text(pdfSafe(it.time), M, y + lh(fsT));
+      const svW = doc.getTextWidth(pdfSafe(it.service));
+      const titleL = doc.splitTextToSize(pdfSafe((it.marked ? "* " : "") + it.title), W - 24 - svW);
+      doc.text(titleL, M + 22, y + lh(fsT));
+      doc.setTextColor(40, 90, 160); doc.text(pdfSafe(it.service), M + W - svW, y + lh(fsT)); doc.setTextColor(0);
+      y += lh(fsT) * titleL.length + 1;
+      doc.setFont("helvetica","normal"); doc.setFontSize(fs); doc.setTextColor(70);
+      doc.text(infoL, M + 22, y + lh(fs)); y += lh(fs) * infoL.length;
+      if (it.rating){ doc.text(pdfSafe(it.rating), M + 22, y + lh(fs)); y += lh(fs); }
+      doc.setTextColor(0);
+      if (descL.length){ doc.text(descL, M + 22, y + lh(fs)); y += lh(fs) * descL.length; }
+      y += 3;
+    }
+    y += 2;
+  }
+  const n = doc.getNumberOfPages();
+  for (let i = 1; i <= n; i++){ doc.setPage(i); doc.setFontSize(8); doc.setTextColor(130); doc.text(pdfSafe(`Min Tablå · ${d.title} · sida ${i} av ${n}`), M, 297 - 8); }
+  return {blob: doc.output("blob"), name: `min-tabla-${d.file}${E.onlyMarked?"-favoriter":""}.pdf`, d};
+}
+function downloadBlob(blob, name){ const u = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u), 4000); }
+function mailto(d){
+  const to = state.exp.to || "";
+  const body = `Hej!\n\nHär är min tablå för ${d.title}${d.sub?" ("+d.sub+")":""}. PDF:en är bifogad.\n\n` +
+    d.days.slice(0, 7).map(day => day.label + "\n" + day.items.slice(0, 12).map(i => `  ${i.time}  ${i.title} – ${i.service}`).join("\n")).join("\n\n") + "\n\nSkickat från Min Tablå";
+  return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent("Min tablå – " + d.title)}&body=${encodeURIComponent(body.slice(0, 1800))}`;
+}
+async function exportPdf(mode){
+  try {
+    toast("Skapar PDF…");
+    const {blob, name, d} = await buildPdf();
+    const file = new File([blob], name, {type:"application/pdf"});
+    if (mode === "share" && navigator.canShare && navigator.canShare({files:[file]})){
+      try { await navigator.share({files:[file], title:"Min tablå – " + d.title, text:`Min tablå för ${d.title}`}); return; }
+      catch(e){ if (e.name === "AbortError") return; }
+    }
+    downloadBlob(blob, name);
+    if (mode === "share"){ location.href = mailto(d); toast("PDF:en är nedladdad – bifoga den i mejlet"); }
+    else toast("PDF nedladdad: " + name);
+  } catch(e){ toast(e.message || "Kunde inte skapa PDF"); }
+}
+function printNow(useExp){
+  const E = state.exp, d = exportData(useExp ? (E.view || state.view) : state.view, useExp ? E.onlyMarked : false);
+  const size = {liten:"9pt", normal:"11pt", stor:"13pt", xstor:"15pt"}[E.size] || "11pt";
+  $("#printArea").style.setProperty("--pfs", size);
+  $("#printArea").innerHTML = `<h1>Min Tablå</h1><div style="font-size:1.2em;font-weight:700">${esc(d.title)}</div><div class="pm">${esc(d.sub)}${d.sub?" · ":""}Utskriven ${fmtD(new Date(),{day:"numeric",month:"long",year:"numeric"})}</div>` +
+    (d.days.length ? d.days.map(day => `<h2>${esc(day.label)}</h2>` + day.items.map(i => `<div class="it"><span class="sv">${esc(i.service)}</span><b>${esc(i.time)}&nbsp;&nbsp;${i.marked?"♥ ":""}${esc(i.title)}</b>
+      <div class="in">${esc([i.label, i.info].filter(Boolean).join(" · "))}${i.rating?" · "+esc(i.rating):""}</div>${E.desc && i.desc ? `<div class="ds">${esc(i.desc)}</div>` : ""}</div>`).join("")).join("") : "<p>Inga program i den här perioden.</p>");
+  try { window.print(); } catch(e){ toast("Utskrift stöds inte här"); }
+}
+
+/* =====================================================================
+   TEXTSTORLEK & KORTKOMMANDON (Windows: Ctrl, Mac/iPad: ⌘)
+   ===================================================================== */
+const TEXTSCALES = [[0.85,"Liten"],[1,"Normal"],[1.15,"Stor"],[1.3,"Större"],[1.5,"Störst"]];
+function setScale(dir){
+  const vals = TEXTSCALES.map(x=>x[0]); let i = vals.indexOf(+state.settings.textScale || 1); if (i < 0) i = 1;
+  i = dir === 0 ? 1 : Math.max(0, Math.min(vals.length - 1, i + dir));
+  state.settings.textScale = vals[i]; save(); document.documentElement.style.setProperty("--z", vals[i]);
+  toast("Textstorlek: " + TEXTSCALES[i][1]); if (route() === "installningar") render();
+}
+const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+const MOD = isMac ? "⌘" : "Ctrl";
+function showKeys(){
+  const K = [[`${MOD} K`, "Sök"],["/", "Sök"],[`${MOD} F`, "Sök"],[`${MOD} P`, "Skriv ut tablån"],[`${MOD} E`, "Exportera PDF / mejla"],
+    [`${MOD} +`, "Större text"],[`${MOD} −`, "Mindre text"],[`${MOD} 0`, "Normal text"],["Alt 1–5", "Byt flik (Tips, Tablå, Sök, Mitt, Inställningar)"],
+    ["↑ ↓", "Flytta mellan program"],["← →", "Bläddra i raden / föregående–nästa period i tablån / föregående–nästa program i detaljvyn"],
+    ["Enter", "Öppna program"],["Esc", "Stäng"],["Page Up/Down", "Föregående/nästa period"],["Home / End", "Första/sista program"],
+    ["T", "Idag (tablå)"],["D · V · M", "Dag, vecka, månad (tablå)"],["F", "♥ Favorit (i detaljvyn eller på markerat program)"],["L", "Gillar (detaljvyn)"],["?", "Visa den här listan"]];
+  $("#sheetc").innerHTML = `<h3>Kortkommandon</h3>` + K.map(([k,v]) => `<div class="avail"><span>${k.split(" ").map(x=>`<span class="kbd">${esc(x)}</span>`).join("")}</span><span style="color:var(--mut);text-align:right">${esc(v)}</span></div>`).join("");
+  $("#sheet").dataset.id = ""; $("#sheet").dataset.mode = "keys";
+  $("#sheetbg").style.display = "block"; requestAnimationFrame(()=>$("#sheet").classList.add("open"));
+}
+let navList = [];
+function focusables(){ const root = $("#sheet").classList.contains("open") ? $("#sheet") : $("#app"); return [...root.querySelectorAll("[data-open]")].filter(el => el.offsetParent !== null); }
+function moveFocus(dir, el){
+  const L = focusables(); if (!L.length) return;
+  let i = L.indexOf(el || document.activeElement);
+  if (dir === "first") i = 0; else if (dir === "last") i = L.length - 1;
+  else if (dir === "down" || dir === "up"){
+    if (i < 0) i = 0;
+    else { // hoppa över rad (hscroll) som helhet vid upp/ned
+      const row = L[i].closest(".hscroll"), step = dir === "down" ? 1 : -1; let j = i + step;
+      while (row && L[j] && L[j].closest(".hscroll") === row) j += step;
+      if (dir === "up" && L[j] && L[j].closest(".hscroll")){ const r2 = L[j].closest(".hscroll"); while (L[j-1] && L[j-1].closest(".hscroll") === r2) j--; }
+      i = Math.max(0, Math.min(L.length - 1, j));
+    }
+  } else i = Math.max(0, Math.min(L.length - 1, i + (dir === "right" ? 1 : -1)));
+  L[i].focus({preventScroll:false}); L[i].scrollIntoView({block:"nearest", inline:"nearest", behavior:"smooth"});
+}
+document.addEventListener("keydown", ev => {
+  const mod = ev.ctrlKey || ev.metaKey, k = ev.key, tag = (ev.target.tagName || "").toLowerCase();
+  const typing = ["input","textarea","select"].includes(tag);
+  const sheetOpen = $("#sheet").classList.contains("open");
+  if (mod && !ev.altKey){
+    const kk = k.toLowerCase();
+    if (kk === "k" || kk === "f"){ ev.preventDefault(); closeDetail(); doSearch(searchQ); setTimeout(()=>{ const i=$("#sq"); if(i){ i.focus(); i.select(); } }, 40); return; }
+    if (kk === "p"){ ev.preventDefault(); printNow(sheetOpen && $("#sheet").dataset.mode === "export"); return; }
+    if (kk === "e"){ ev.preventDefault(); openExport(); return; }
+    if (k === "+" || k === "=" ){ ev.preventDefault(); setScale(1); return; }
+    if (k === "-" || k === "_"){ ev.preventDefault(); setScale(-1); return; }
+    if (k === "0"){ ev.preventDefault(); setScale(0); return; }
+    return;
+  }
+  if (ev.altKey && /^[1-5]$/.test(k)){ ev.preventDefault(); closeDetail(); location.hash = "#" + ["tips","tabla","sok","mina","installningar"][+k-1]; return; }
+  if (typing){
+    if (k === "Enter" && ev.target.id === "sq"){ doSearch(ev.target.value); }
+    if (k === "Escape") ev.target.blur();
+    return;
+  }
+  if (k === "Escape"){ closeDetail(); return; }
+  if (k === "?"){ ev.preventDefault(); showKeys(); return; }
+  if (k === "/"){ ev.preventDefault(); closeDetail(); doSearch(searchQ); setTimeout(()=>$("#sq")?.focus(), 40); return; }
+  let focused = document.activeElement && document.activeElement.closest && document.activeElement.closest("[data-open]");
+  if (sheetOpen && focused && !focused.closest("#sheet")) focused = null;
+  if (sheetOpen && $("#sheet").dataset.id && !focused && (k === "ArrowLeft" || k === "ArrowRight")){
+    ev.preventDefault(); const id = $("#sheet").dataset.id, i = navList.indexOf(id);
+    const nid = navList[i + (k === "ArrowRight" ? 1 : -1)]; if (nid) openDetail(nid, true); return;
+  }
+  if (sheetOpen && $("#sheet").dataset.id && !focused){
+    const map = {f:"fav", l:"liked"}; if (map[k.toLowerCase()]){ $(`[data-act="${map[k.toLowerCase()]}"]`)?.click(); return; }
+  }
+  if (k === "ArrowDown"){ ev.preventDefault(); moveFocus("down", focused); return; }
+  if (k === "ArrowUp"){ ev.preventDefault(); moveFocus("up", focused); return; }
+  if (k === "Home"){ ev.preventDefault(); moveFocus("first"); return; }
+  if (k === "End"){ ev.preventDefault(); moveFocus("last"); return; }
+  if ((k === "ArrowLeft" || k === "ArrowRight") && focused && focused.closest(".hscroll")){ ev.preventDefault(); moveFocus(k === "ArrowRight" ? "right" : "left", focused); return; }
+  if ((k === "Enter" || k === " ") && focused){ ev.preventDefault(); focused.click(); return; }
+  if (k.toLowerCase() === "f" && focused && !sheetOpen){ toggleMark(focused.dataset.open); const id = focused.dataset.open; render(); document.querySelector(`#app [data-open="${id}"]`)?.focus(); return; }
+  if (route() === "tabla" && !sheetOpen){
+    const step = n => document.querySelector(`[data-step="${n}"]`)?.click();
+    if (k === "ArrowLeft" || k === "PageUp"){ ev.preventDefault(); step(-1); return; }
+    if (k === "ArrowRight" || k === "PageDown"){ ev.preventDefault(); step(1); return; }
+    const vm = {d:"dag", v:"vecka", m:"månad"}[k.toLowerCase()]; if (vm){ state.view = vm; save(); render(); return; }
+    if (k.toLowerCase() === "t"){ step(0); return; }
+  }
+});
+/* Händelser för sök, export och visning */
+document.addEventListener("click", ev => {
+  const t = ev.target;
+  if (t.id === "sgo"){ doSearch($("#sq").value); return; }
+  const sq = t.closest("[data-sq]"); if (sq){ doSearch(sq.dataset.sq); return; }
+  const src = t.closest("[data-src]");
+  if (src){ const k = src.dataset.src; state.search[k] = !state.search[k]; save(); render(); if (searchQ && k !== "erotic") runExternal(searchQ); return; }
+  if (t.id === "aisearch"){ runAI(`Hitta program i katalogen som passar sökningen: "${searchQ}". Lista upp till 8 med [[Titel]], var de finns och en kort mening om varför de passar mig. Föreslå gärna 2 titlar utanför katalogen också.`); return; }
+  if (t.id === "openExport"){ openExport(); return; }
+  if (t.id === "quickPrint"){ printNow(false); return; }
+  if (t.id === "showKeys"){ showKeys(); return; }
+  const sc = t.closest("[data-scale]"); if (sc){ state.settings.textScale = +sc.dataset.scale; save(); render(); return; }
+});
+$("#sheet").addEventListener("click", ev => {
+  if ($("#sheet").dataset.mode !== "export") return;
+  const t = ev.target, E = state.exp;
+  const v = t.closest("[data-expview]"); if (v){ E.view = v.dataset.expview; save(); openExport(); return; }
+  const z = t.closest("[data-expsize]"); if (z){ E.size = z.dataset.expsize; save(); openExport(); return; }
+  if (t.id === "expShare") exportPdf("share");
+  if (t.id === "expDl") exportPdf("download");
+  if (t.id === "expPrint") printNow(true);
+});
+$("#sheet").addEventListener("change", ev => {
+  if ($("#sheet").dataset.mode !== "export") return;
+  const t = ev.target, E = state.exp;
+  if (t.id === "expMarked"){ E.onlyMarked = t.checked; save(); updateExpInfo(); }
+  if (t.id === "expDesc"){ E.desc = t.checked; save(); }
+  if (t.id === "expTo"){ E.to = t.value.trim(); save(); }
+});
+document.addEventListener("change", ev => {
+  const t = ev.target;
+  if (t.id === "eroticSet"){ state.search.erotic = t.checked; save(); render(); }
+  if (t.id === "ytKey"){ state.settings.ytKey = t.value.trim(); save(); toast("Sparat"); }
+  if (t.id === "pAge" && +t.value && +t.value < 18 && state.search.erotic){ state.search.erotic = false; save(); }
+});
+
+
+render(); checkNotify(); loadData(false);
+</script>
+</body>
+</html>
